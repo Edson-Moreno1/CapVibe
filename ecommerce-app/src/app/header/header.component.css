@@ -1,0 +1,26 @@
+
+.custom-navbar {
+    background-color: #007BFF; 
+  }
+  
+
+  .navbar-brand img {
+    transition: transform 0.3s ease;
+  }
+  
+  .navbar-brand:hover img {
+    transform: scale(1.05);
+  }
+  
+
+  .navbar-brand {
+    font-weight: bold;
+  }
+  
+  .nav-link {
+    font-weight: 500;
+  }
+  
+  .nav-link.active {
+    font-weight: 700;
+  }
