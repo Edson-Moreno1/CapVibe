@@ -31,11 +31,12 @@ const orderSchema = new mongoose.Schema({
     enum: ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'],
     default: 'pendiente'
   },
-  shippingAddress: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String
+  direccionEnvio: {
+    calle: String,
+    ciudad: String,
+    estado: String,
+    codigoPostal: String,
+    pais: { type: String, default: 'México' }
   }
 }, {
   timestamps: true
