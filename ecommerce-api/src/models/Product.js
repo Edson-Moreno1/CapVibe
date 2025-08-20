@@ -30,9 +30,18 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  specifications: {
-    type: Map,
-    of: String
+  size: {
+    type: String,
+    enum: ['S/M', 'L/XL', 'Ajustable'],
+    default: 'Ajustable'
+  },
+  color: {
+    type: String,
+    required: true
+  },
+  material: {
+    type: String,
+    default: 'Algodón'
   },
   images: [{
     type: String
