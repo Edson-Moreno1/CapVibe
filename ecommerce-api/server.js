@@ -3,6 +3,16 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
+// Importar rutas
+import authRoutes from './src/routes/auth.js';
+import productRoutes from './src/routes/products.js';
+import userRoutes from './src/routes/users.js';
+import orderRoutes from './src/routes/orders.js';
+import cartRoutes from './src/routes/cart.js';
+import categoryRoutes from './src/routes/categories.js';
+import shippingAddressRoutes from './src/routes/shippingAddresses.js';
+import paymentMethodRoutes from './src/routes/paymentMethods.js';
+
 dotenv.config();
 
 const app = express();
@@ -13,7 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 // Conexión MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/capvibe')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce-db')
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.error('Error MongoDB:', err));
 
@@ -21,6 +31,16 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/capvibe')
 app.get('/', (req, res) => {
   res.json({ message: 'CapVibe API funcionando' });
 });
+
+// Rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/shipping-addresses', shippingAddressRoutes);
+app.use('/api/payment-methods', paymentMethodRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
