@@ -23,9 +23,8 @@ app.use(cors());
 app.use(express.json());
 
 // Conexión MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce-db')
-  .then(() => console.log('MongoDB conectado'))
-  .catch(err => console.error('Error MongoDB:', err));
+import dbConnection from './src/config/database.js';
+dbConnection();
 
 // Ruta de prueba
 app.get('/', (req, res) => {
