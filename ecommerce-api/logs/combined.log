@@ -1,0 +1,11 @@
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:35:00","url":"/"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:37:16","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:37:24","url":"/api/products/68a91d6239b4b07627634433"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:37:31","url":"/api/products/invalid-id"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:38:00","url":"/api/products/invalid-id"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:38:09","url":"/api/products/123"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-09-09 20:38:19","url":"/api/categories"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"POST","service":"ecommerce-api","timestamp":"2025-09-09 20:38:30","url":"/api/auth/register"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"POST","service":"ecommerce-api","timestamp":"2025-09-09 20:38:41","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"POST","service":"ecommerce-api","timestamp":"2025-09-09 20:39:40","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"POST","service":"ecommerce-api","timestamp":"2025-09-09 20:39:53","url":"/api/products"}

@@ -7,16 +7,16 @@ import {
   deleteProduct 
 } from '../controllers/productController.js';
 import { auth } from '../middlewares/auth.js';
-import { validateProduct } from '../middlewares/validators.js';
+import { validateProduct, validateProductImproved, validateObjectId } from '../middlewares/validators.js';
 
 const router = express.Router();
 
 router.get('/', getAllProducts);              
-router.get('/:id', getProductById);
+router.get('/:id', validateObjectId('id'), getProductById);
 
-// Aplicar validaciones a crear y actualizar productos
-router.post('/', auth, validateProduct, createProduct);
-router.put('/:id', auth, validateProduct, updateProduct);
-router.delete('/:id', auth, deleteProduct);
+// Aplicar validaciones mejoradas a crear y actualizar productos
+router.post('/', auth, validateProductImproved, createProduct);
+router.put('/:id', auth, validateObjectId('id'), validateProductImproved, updateProduct);
+router.delete('/:id', auth, validateObjectId('id'), deleteProduct);
 
 export default router;
