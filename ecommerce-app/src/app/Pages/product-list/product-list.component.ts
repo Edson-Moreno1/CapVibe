@@ -1,34 +1,37 @@
-import { Component,OnInit } from '@angular/core';
-import { CartService } from '../../services/cart.service';
-import { Product } from '../../Models/products';
-import { CommonModule } from '@angular/common'; 
-import { RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
-import { ProductService } from '../../services/product.service';
+import { Component,OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ProductService } from "../../services/product.service";
+import { RouterLink } from "@angular/router";
+import { Product } from "../../Models/products";
+import { ApiResponse } from "../../Models/api-response";
 
 @Component({
-  selector: 'app-product-list',
-  imports: [CommonModule,RouterModule],
+  selector: "app-product-list",
   standalone: true,
-  templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.css'
+  imports: [CommonModule, RouterLink],
+  templateUrl: "./product-list.component.html",
+  styleUrls: ["./product-list.component.css"],  
 })
-export class ProductListComponent implements OnInit{
+
+export class ProductListComponent implements OnInit {
   products: Product[] = [];
 
-  constructor(private productService: ProductService,private cartService:CartService){}
+  constructor(private productService: ProductService) {}
 
-ngOnInit(): void {
-  
-  this.loadProducts();
+    ngOnInit(): void {
+        this.productService.getProducts().subscribe({
+          next:(response:ApiResponse) =>{
+            this.products = response.products;
+            console.log('Respuesta completa de la API:', response);
+            console.log('productos extraidos para la vista:', this.products);
+          },
+          error:(err) =>{
+            console.log('Error al obtener los productos:', err);
+          }
+        });
+    }
+
+    addToCart(product: any) {
+      console.log('Añadiendo al carrito (funcion temporal):', product);
+    }
 }
-
-loadProducts():void {
-  this.productService.getProducts().subscribe(products => {this.products =products;});
-}
-
-addToCart(product:Product):void{
-  this.cartService.addToCart(product);
-}
-
-} //end
