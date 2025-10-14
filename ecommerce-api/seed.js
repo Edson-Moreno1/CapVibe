@@ -62,22 +62,115 @@ const seedDB = async () => {
         {
             name: "Golden state Warriors", price: 899, stock: 10,
             description: "Gorra de los Golden state Warrios NBA, Presenta el logotipo de los Warrios bordado en los paneles frontales.",
-            images: ["assets/img7.png"], brand: "Mitchell & Ness", color: "Azul/Amarillo",
+            images: ["assets/img7.png"], brand: "New Era", color: "Azul/Amarillo",
             category: categoryMap['NBA']
         },
         {
             name: "Club America", price: 799, stock: 25,
             description: "Gorra de el Club America Liga MX, Presenta escudo del Club America bordado en los paneles frontales.",
-            images: ["assets/img13.png"], brand: "Nike", color: "Amarillo",
+            images: ["assets/img13.png"], brand: "New Era", color: "Amarillo",
             category: categoryMap['Liga MX']
         },
         {
             name: "Red Bull", price: 799, stock: 12,
             description: "Gorra de Red Bull, Presenta el logotipo de Red Bull bordado en los paneles frontales.",
-            images: ["assets/img16.png"], brand: "Puma", color: "Azul Marino",
+            images: ["assets/img16.png"], brand: "New Era", color: "Azul Marino",
             category: categoryMap['F1']
-        }
-        // ... Puedes seguir añadiendo el resto de tus productos aquí, ya enriquecidos ...
+        },
+      {
+          name:"Los Angeles Dodgers",price:799, stock:5,
+          description:"Gorra de los Angeles Dodgers MLB, presenta el logotipo de los Dodgers bordado en los paneles frontales.",
+          images:["assets/img3.png"],brand: "New Era", color: "Gris/Azul",
+          category: categoryMap['MLB']
+      },
+      {
+          name:"New York Yankees",price:1099, stock:2,
+          description:"Gorra de los New York Yankees MLB, presenta el logotipo de los Yankees bordado en los paneles frontales.",
+          images:["assets/img4.png"],brand:"New Era",color:"Gris",
+          category: categoryMap['MLB']
+      },
+      {
+          name:"San Diego Padres",price:799, stock:20,
+          description:"Gorra de los San Diego Padres MLB, presenta el logitpo de los Padres bordado en los paneles frontales.",
+          images:["assets/img5.png"],brand:"New Era", color:"Cafe",
+          category: categoryMap['MLB']
+      },
+      {
+          name:"San Francisco Gigants",price:799,stock:20,
+          description:"Gorra de los San Francisco Gigants MLB, Presenta el logotipo de los Giants bordado en los paneles frontales.",
+          images:["assets/img6.png"],brand:"New Era", color:"Naranja",
+          category: categoryMap['MLB']
+      },
+      {
+          name:"Boston Celtics",price:1299,stock:20,
+          description:"Gorra plana de Boton Celtics, Presenta el logotipo de los Celtics bordado y con flores bordadas en la corona.",
+          images:["assets/img8.png"],brand:"New Era",color:"Beige/Naranja",
+          category: categoryMap['NBA']
+      },
+      {
+          name:"Los Angeles Lakers",price:79,stock:20,
+          description:"Gorra de los angeles Lakers NBA, Presenta el logotipo de los Lakers bordado en los paneles frontales.",
+          images:["assets/img9.png"], brand:"New Era", color:"Negro",
+          category: categoryMap['NBA']
+      },
+      {
+          name:"Charros de Jalisco",price:799,stock:20,
+          description:"Gorra de los Charros de Jalisco LMB, Presenta el logotipo de los Charros de Jalisco bordado en los paneles frontales.",
+          images:["assets/img10.png"],brand:"New Era", color:"Azul",
+          category: categoryMap['LMB']
+      },
+      {
+          name:"Diablos Rojos de México",price:799,stock:20,
+          description:"Gorra de los Diablos Rojos de México LMB, Presenta el logotipo de los Diablos Rojos de México bordado en los paneles frontales.",
+          images:["assets/img11.png"],brand:"New Era",color:"Rojo",
+          category: categoryMap['LMB']
+      },
+      {
+          name:"Rieleros de Aguascalientes",price:799,stock:5,
+          description:"Gorra de los Rieleros de Aguascalientes LMB, Presenta el logotipo de los Rieleros de Aguascalientes bordado en los paneles frontales.",
+          images:["assets/img12.png"],brand:"New Era", color:"Negro",
+          category: categoryMap['LMB']
+      },
+      {
+          name:"Club Chivas",price:799,stock:1,
+          description:"Gorra de el Club Chivas Liga MX, Presenta escudo del Club Chivas bordado en los paneles frontales.",
+          images:["assets/img14.png"],brand:"New Era",color:"Azul",
+          category: categoryMap['Liga MX']
+      },
+      {
+        name:"Club Cruz Azul",
+        price:799,stock:5,
+        description:"Gorra de el Club Cruz Azul Liga MX, Presenta escudo del Club Cruz Azul bordado en los paneles frontales.",
+        images:["assets/img15.png"], brand:"New Era", color:"Azul",
+        category: categoryMap['Liga MX']
+      },
+      {
+         name:"Mclaren",
+        price:799,stock:20,
+        description:"Gorra de Mclaren, Presenta el logotipo de Mclaren bordado en los paneles frontales.",
+        images:["assets/img17.png"],brand:"New Era", color:"Naranja",
+        category: categoryMap['F1']
+      },
+      {
+        name:"Pittsburgh Pirates",
+        price:599,stock:20,
+        description:"Gorra de los Pittsburgh Pirates MLB, Presenta el logotipo de los Pirates bordado en los paneles frontales.",
+        images:["assets/img18.png"], brand:"New Era", color:"Negro",
+        category: categoryMap['MLB']
+      },
+      {
+       name:"Boston Red Sox",
+        price:799,stock:20,
+        description:"Gorra de los Boston Red Sox MLB, Presenta el logotipo de los Red Sox bordado en los paneles frontales.",
+        images:["assets/img19.png"],brand:"New Era",color:"Negro",
+        category: categoryMap['MLB']
+      },
+      {
+         name:"San Francisco 49Ers",
+        price:799,stock:20,
+        description:"Gorra de los San Francisco 49Ers NFL, Presenta el logotipo de los 49Ers bordado en los paneles frontales.",
+        images:["assets/img20.png"],brand:"New Era", color:"Beige/Rojo",
+        category: categoryMap['NFL']
     ];
 
     await Product.insertMany(productsToCreate);
