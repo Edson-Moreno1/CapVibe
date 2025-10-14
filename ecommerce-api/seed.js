@@ -5,7 +5,7 @@ const Product = require('./models/product.js'); // Asegúrate que la ruta sea co
 const Category = require('./models/category.js'); // Asegúrate que la ruta sea correcta
 
 // ¡MUY IMPORTANTE! Reemplaza esta URL con la URL de conexión a TU base de datos.
-const dbUrl = 'mongodb://localhost:27017/tuBaseDeDatos';
+const dbUrl = 'mongodb://localhost:27017/ecommerce-db';
 
 mongoose.connect(dbUrl)
   .then(() => {
