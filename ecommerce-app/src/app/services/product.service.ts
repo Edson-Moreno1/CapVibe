@@ -1,34 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Product } from '../Models/products';
-import { PRODUCTOS } from '../Models/productos';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
+@Injectable({ providedIn:'root'})
+export class ProductService{
+  private apiUrl = 'http://localhost:3000/products';
+  constructor(private http:HttpClient){}
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ProductService {
-
-  constructor() { }
-//Obtener todos los productos
-  getProducts(): Observable<Product[]> {
-    return of(PRODUCTOS as Product[]);
-  }
-
-//Obtener un producto por id
-
-  getProductById(id: number): Observable<Product | undefined> {
-    const product= PRODUCTOS.find(p=>p.id ===id);
-    return of(product);
-  }
-
-
-  searchProducts(term: string): Observable<Product[]> {
-    if(!term.trim()){
-      return this.getProducts();
-    }
-    const filteredProducts = PRODUCTOS.filter(product => product.name.toLowerCase().
-      includes(term.toLowerCase()) || product.description.toLowerCase().includes(term.toLowerCase()));
-    return of(filteredProducts);
+  getProducts(): Observable<any[]>{
+    return this.http.get<any[]>(this.apiUrl);
   }
 }
