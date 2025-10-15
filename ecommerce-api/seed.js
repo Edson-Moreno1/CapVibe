@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import Product  from "./src/models/Product.js";
 import Category from "./src/models/Category.js";
+import 'dotenv/config';
 // ¡MUY IMPORTANTE! Reemplaza esta URL con la URL de conexión a TU base de datos.
-const dbUrl = 'mongodb://localhost:27017/ecommerce-db';
+const dbUrl = process.env.MONGODB_URI;
 
 mongoose.connect(dbUrl)
   .then(() => {

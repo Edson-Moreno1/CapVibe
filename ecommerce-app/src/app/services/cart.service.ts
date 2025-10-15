@@ -15,14 +15,14 @@ export class CartService {
   constructor() { 
     this.loadCart();
   }
-  private readonly cartSubject = new BehaviorSubject<CartItem[]>([]);
-  readonly cart$ =this.cartSubject.asObservable();
-  /* 
+  /*private readonly cartSubject = new BehaviorSubject<CartItem[]>([]);
+  readonly cart$ =this.cartSubject.asObservable();*/
+  
 private cartSubject = new BehaviorSubject<CartItem[]>([]);
   getCart(): Observable<CartItem[]>{
     return this.cartSubject.asObservable();
   }
-  */
+  
 
   addToCart(product:Product,quantity:number =1): void{
     const existingItem = this.cartItems.find(item => item.product.id === product.id);

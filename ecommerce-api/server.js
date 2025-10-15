@@ -26,6 +26,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// config para  codespace quitar cuando este en  local 
 
 // Middlewares
 app.use(cors());
