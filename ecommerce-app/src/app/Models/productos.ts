@@ -6,7 +6,7 @@ export const PRODUCTOS:Product[] = [
         name:"Colorado Rockies",
         price:799,
         description:"Gorra de los Colorado Rockies MLB, Presenta el logotipo de los Rockies con un detalle floral bordado en los paneles frontales",
-        img:"assets/img1.png"
+        images:"assets/img1.png"
     },
     {
         id:1,

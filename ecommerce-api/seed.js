@@ -1,9 +1,6 @@
-const mongoose = require('mongoose');
-
-// Importamos AMBOS modelos, porque los necesitamos a los dos.
-const Product = require('./models/product.js'); // Asegúrate que la ruta sea correcta
-const Category = require('./models/category.js'); // Asegúrate que la ruta sea correcta
-
+import mongoose from "mongoose";
+import Product  from "./src/models/Product.js";
+import Category from "./src/models/Category.js";
 // ¡MUY IMPORTANTE! Reemplaza esta URL con la URL de conexión a TU base de datos.
 const dbUrl = 'mongodb://localhost:27017/ecommerce-db';
 
@@ -171,7 +168,9 @@ const seedDB = async () => {
         description:"Gorra de los San Francisco 49Ers NFL, Presenta el logotipo de los 49Ers bordado en los paneles frontales.",
         images:["assets/img20.png"],brand:"New Era", color:"Beige/Rojo",
         category: categoryMap['NFL']
-    ];
+
+      } 
+       ];
 
     await Product.insertMany(productsToCreate);
     console.log('✅ Productos creados con éxito.');

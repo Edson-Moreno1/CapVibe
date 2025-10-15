@@ -16,19 +16,44 @@ import { ApiResponse } from "../../Models/api-response";
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
 
+  currentPage: number = 1;
+  totalPages: number = 0;
+
+
+
   constructor(private productService: ProductService) {}
 
-    ngOnInit(): void {
-        this.productService.getProducts().subscribe({
-          next:(response:ApiResponse) =>{
-            this.products = response.products;
-            console.log('Respuesta completa de la API:', response);
-            console.log('productos extraidos para la vista:', this.products);
-          },
-          error:(err) =>{
-            console.log('Error al obtener los productos:', err);
-          }
-        });
+  ngOnInit(): void{
+    this.loadProducts();
+  }
+    loadProducts():void{
+      this.productService.getProducts(this.currentPage).subscribe({
+        next:(response:ApiResponse)=>{
+          this.products=response.products;
+          this.currentPage = response.currentPage;
+          this.totalPages = response.totalPages;
+          console.log('Pahina actual:',this.currentPage,'de',this.totalPages);
+        },
+        error:(err)=>{
+          console.log('Error al obtener los productos:',err);
+        }
+
+      });
+    }
+   
+    
+
+    nextPage(): void{
+      if(this.currentPage<this.totalPages){
+        this.currentPage++;
+        this.loadProducts();
+      }
+    }
+    previousPage(): void{
+      if(this.currentPage>1){
+        this.currentPage--;
+        this.loadProducts();
+      }
     }
 
     addToCart(product: any) {

@@ -12,7 +12,7 @@ export const getAllProducts = async (req, res) => {
       .populate('category', 'name')
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1,_id:1 });
 
     const total = await Product.countDocuments({ isActive: true });
 
