@@ -1,26 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CartService } from '../services/cart.service';
+import { Subscription } from 'rxjs';
+import { CartItem } from '../Models/cart';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterModule, CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   cartItemCount: number = 0;
+  private cartSubscription!: Subscription;
 
-  constructor(private cartService:CartService) { }
+  constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
-    this.cartService.getCart().subscribe(items => { 
-      this.cartItemCount = items.reduce((count, item) => count + item.quantity,0);
+    // Nos suscribimos al nuevo observable 'cart$'
+    this.cartSubscription = this.cartService.cart$.subscribe((items: CartItem[]) => {
+      // Usamos reduce para sumar las cantidades de todos los ítems
+      this.cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
     });
   }
 
-
-
-}//end
+  ngOnDestroy(): void {
+    // Nos desuscribimos para evitar fugas de memoria
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
+  }
+}

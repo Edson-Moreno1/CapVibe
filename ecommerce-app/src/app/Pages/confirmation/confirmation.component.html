@@ -39,7 +39,7 @@
                   Resumen del pedido
                 </div>
                 <div class="card-body">
-                  @for (item of order.items; track item.product.id) {
+                  @for (item of order.items; track item.product._id) {
                     <div class="d-flex justify-content-between mb-2">
                       <div>
                         <span>{{ item.product.name }}</span>

@@ -15,17 +15,13 @@ export class CartService {
   constructor() { 
     this.loadCart();
   }
-  /*private readonly cartSubject = new BehaviorSubject<CartItem[]>([]);
-  readonly cart$ =this.cartSubject.asObservable();*/
-  
-private cartSubject = new BehaviorSubject<CartItem[]>([]);
-  getCart(): Observable<CartItem[]>{
-    return this.cartSubject.asObservable();
-  }
-  
+ private readonly cartSubject = new BehaviorSubject<CartItem[]>([]);
+readonly cart$ = this.cartSubject.asObservable();
+
+
 
   addToCart(product:Product,quantity:number =1): void{
-    const existingItem = this.cartItems.find(item => item.product.id === product.id);
+    const existingItem = this.cartItems.find(item => item.product._id === product._id);
 
     if(existingItem){
       existingItem.quantity += quantity;
@@ -36,15 +32,15 @@ private cartSubject = new BehaviorSubject<CartItem[]>([]);
     this.updateCart();
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    const item = this.cartItems.find(item => item.product.id === productId);
+  updateQuantity(productId: string, quantity: number): void {
+    const item = this.cartItems.find(item => item.product._id === productId);
     if (item) {
       item.quantity = quantity;
       this.updateCart();
     }
   }
-  removeFromCart(productId: number): void {
-    this.cartItems = this.cartItems.filter(item => item.product.id !== productId);
+  removeFromCart(productId: string): void {
+    this.cartItems = this.cartItems.filter(item => item.product._id !== productId);
     this.updateCart();
   }
   getTotal(): number {

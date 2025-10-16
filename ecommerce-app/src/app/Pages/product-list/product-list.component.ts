@@ -4,6 +4,7 @@ import { ProductService } from "../../services/product.service";
 import { RouterLink } from "@angular/router";
 import { Product } from "../../Models/products";
 import { ApiResponse } from "../../Models/api-response";
+import { CartService } from "../../services/cart.service";
 
 @Component({
   selector: "app-product-list",
@@ -19,9 +20,10 @@ export class ProductListComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 0;
 
+  successMessage: string | null =null;
 
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService, private cartService:CartService) {}
 
   ngOnInit(): void{
     this.loadProducts();
@@ -32,7 +34,7 @@ export class ProductListComponent implements OnInit {
           this.products=response.products;
           this.currentPage = response.currentPage;
           this.totalPages = response.totalPages;
-          console.log('Pahina actual:',this.currentPage,'de',this.totalPages);
+          console.log('Pagina actual:',this.currentPage,'de',this.totalPages);
         },
         error:(err)=>{
           console.log('Error al obtener los productos:',err);
@@ -56,7 +58,11 @@ export class ProductListComponent implements OnInit {
       }
     }
 
-    addToCart(product: any) {
-      console.log('Añadiendo al carrito (funcion temporal):', product);
-    }
+    addToCart(product: Product) {
+      this.cartService.addToCart(product);
+      this.successMessage = `${product.name} ha sido añadido al carrito.`;
+      setTimeout(() =>{
+        this.successMessage = null;
+      },3000);
+  }
 }
