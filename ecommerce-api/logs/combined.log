@@ -183,3 +183,15 @@
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-15 21:46:56","url":"/api/products?page=1"}
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-15 21:47:06","url":"/api/products?page=1"}
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-15 21:47:11","url":"/api/products?page=2"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:04","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:14","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:15","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:20","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:21","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:22","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:32","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 19:56:34","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 21:06:54","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 21:10:06","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 21:12:07","url":"/api/products?page=1"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-10-19 21:15:02","url":"/api/products?page=1"}
