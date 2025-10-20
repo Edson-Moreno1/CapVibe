@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../services/cart.service';
+import { CartService } from '../../services/cart.service';
 import { Subscription } from 'rxjs';
-import { CartItem } from '../Models/cart';
+import { CartItem } from '../../Models/cart';
 
 @Component({
   selector: 'app-header',
@@ -19,15 +19,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
-    // Nos suscribimos al nuevo observable 'cart$'
+    // Nos suscribimos al observable del carrito
     this.cartSubscription = this.cartService.cart$.subscribe((items: CartItem[]) => {
-      // Usamos reduce para sumar las cantidades de todos los ítems
+      // Sumamos la 'quantity' de cada item para obtener el total de productos
       this.cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
     });
   }
 
   ngOnDestroy(): void {
-    // Nos desuscribimos para evitar fugas de memoria
+    // Limpiamos la suscripción al destruir el componente
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
