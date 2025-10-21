@@ -1,29 +1,55 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http'; // <-- 1. Importa HttpClient
+import { Router } from '@angular/router'; // <-- 2. Importa Router
+import { BehaviorSubject, Observable, tap } from 'rxjs'; // <-- 3. Importa tap
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  private loggedIn = new BehaviorSubject<boolean>(false);
-
- 
+  // URL base de tu API (ajusta si es necesario, usa environment si prefieres)
+  private apiUrl = '/api/auth'; // Usando el proxy o tu URL completa
+  
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken()); // <-- 6. Comprueba token al inicio
   isLoggedIn$ = this.loggedIn.asObservable();
 
-  constructor() {
-    
+  constructor(
+    private http: HttpClient, // <-- Inyecta HttpClient
+    private router: Router   // <-- Inyecta Router
+  ) {}
+
+  // 5a. Método para Registro (llama a POST /api/auth/register)
+  register(userData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
 
-
-  login(): void {
-    console.log('Simulando login...');
-    this.loggedIn.next(true); 
+  // 5b. Método para Login (llama a POST /api/auth/login)
+  login(credentials: any): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(response => {
+        // Si el login es exitoso (hay token)
+        if (response.token) {
+          localStorage.setItem('authToken', response.token); // Guarda el token
+          this.loggedIn.next(true); // Actualiza el estado a logueado
+        }
+      })
+    );
   }
 
-  // Simula un cierre de sesión
+  // 5c. Método para Logout
   logout(): void {
-    console.log('Simulando logout...');
-    this.loggedIn.next(false); 
+    localStorage.removeItem('authToken'); // Elimina el token
+    this.loggedIn.next(false); // Actualiza el estado a no logueado
+    this.router.navigate(['/login']); // Redirige al login
+  }
+
+  // Método privado para comprobar si existe un token en localStorage
+  private hasToken(): boolean {
+    return !!localStorage.getItem('authToken');
+  }
+
+  // Opcional: Método para obtener el token si lo necesitas en otras partes
+  getToken(): string | null {
+    return localStorage.getItem('authToken');
   }
 }

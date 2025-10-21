@@ -25,7 +25,17 @@
           </div>
         }
       </div>
-
+@if (errorMessage) {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+              <span class="block sm:inline">{{ errorMessage }}</span>
+            </div>
+          }
+          <div>
+            <button type="submit" ... >
+              Entrar
+            </button>
+          </div>
+        </form>
       <div>
         <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
         <input 

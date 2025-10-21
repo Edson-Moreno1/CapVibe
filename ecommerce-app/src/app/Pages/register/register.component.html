@@ -59,3 +59,30 @@
           <div class="mt-1 text-sm text-red-600">
             @if (registerForm.get('password')?.errors?.['required']) {
               <span>La contraseña es obligatoria.</span>
+            }
+            @if (registerForm.get('password')?.errors?.['minlength']) {
+              <span>La contraseña debe tener al menos 6 caracteres.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button 
+          type="submit" 
+          [disabled]="registerForm.invalid"
+          class="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Registrarme
+        </button>
+      </div>
+    </form>
+
+    <p class="text-sm text-center text-gray-600">
+      ¿Ya tienes cuenta? 
+      <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+        Inicia sesión aquí
+      </a>
+    </p>
+  </div>
+</div>

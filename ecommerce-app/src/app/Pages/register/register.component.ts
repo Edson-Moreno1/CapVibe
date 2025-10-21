@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service'; // Aunque aún no lo usemos para el registro real
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -13,6 +14,7 @@ import { AuthService } from '../../services/auth.service'; // Aunque aún no lo 
 })
 export class RegisterComponent {
   registerForm: FormGroup; // Propiedad para el formulario
+  eerrorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -27,17 +29,28 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    this.errorMessage = null;
     if (this.registerForm.valid) {
-      console.log('Formulario de registro válido:', this.registerForm.value);
-      // TODO: Llamar al método register del AuthService con los datos
+      const userData = this.registerForm.value; // Obtiene name, email, password
       
-      // Simulación temporal de registro exitoso:
-      alert('¡Registro exitoso! (Simulado). Ahora puedes iniciar sesión.'); // Mostramos una alerta
-      this.router.navigate(['/login']); // Redirige a la página de Login
+      // Llama al método register del servicio
+      this.authService.register(userData).subscribe({
+        next: (response) => {
+          // Si el registro es exitoso
+          console.log('Registro exitoso:', response);
+          alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+          this.router.navigate(['/login']); // Redirige al Login
+        },
+       error: (err: HttpErrorResponse) => { // <-- 2. Captura el error HTTP
+          console.error('Error en el login:', err);
+          // Guarda el mensaje de error de la API o uno genérico
+          this.errorMessage = err.error?.message || 'Credenciales incorrectas o error del servidor.';
+        }
+      });
       
     } else {
       console.log('Formulario de registro inválido');
-      this.registerForm.markAllAsTouched(); // Marca campos para mostrar errores
+      this.registerForm.markAllAsTouched(); 
     }
   }
 }
