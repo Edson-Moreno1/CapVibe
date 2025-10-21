@@ -15,7 +15,7 @@
       <!-- Imágenes con transición suave -->
       @for (product of featuredProducts; track product._id; let i = $index) {
         <div 
-          [class]="currentIndex === i ? 'opacity-100 scale-100' : 'opacity-0 scale-95'" 
+          [class]="currentIndex === i ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'" 
           class="absolute inset-0 transition-all duration-700 ease-in-out">
           <a [routerLink]="['/products', product._id]" class="block w-full h-full">
             <img 

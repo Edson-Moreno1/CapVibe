@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { ApiResponse } from "../Models/api-response";
 import { __param } from "tslib";
+import { Product } from "../Models/products";
 
 @Injectable({ providedIn:'root'})
 export class ProductService{
@@ -17,5 +18,13 @@ export class ProductService{
   getProducts(page: number =1): Observable<ApiResponse>{
     const params = { page:page.toString()};
     return this.http.get<ApiResponse>(this.apiUrl,{params});
+  }
+/** 
+ * 
+ * @param id
+ */ 
+
+  getProductById(id:string):Observable<Product>{
+    return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
   }
