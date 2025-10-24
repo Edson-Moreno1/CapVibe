@@ -1,68 +1,36 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import * as authService from '../services/authService.js';
+import logger from '../config/logger.js';
 
-export const register = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
-
-    // Verificar si usuario existe
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Usuario ya existe' });
-    }
-
-    // Crear usuario
-    const user = new User({ name, email, password, role });
-    await user.save();
-
-    // Generar token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
+export const register = async (req, res)=> {
+  try{
+    const result = await authService.registerUser(req.body);
     res.status(201).json({
-      message: 'Usuario creado exitosamente',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      message:'Usuario creado existosamente',
+      ...result
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Error del servidor', error: error.message });
+  } catch (error){
+    if(error.name === 'AuthError'){
+      logger.warn(`Intento de registro fallido:${error.message}`);
+      return res.status(error.statusCode || 400).json({message:error.message});
+    }
+    logeer.error(`Error en el registro de usuario: ${error.message}`);
+    res.status(500).json({ message:'Error interno del servidor',error:error.message});
   }
 };
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Buscar usuario
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Credenciales inválidas' });
-    }
-
-    // Verificar password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Credenciales inválidas' });
-    }
-
-    // Generar token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
+export const login = async(req,res) => {
+  try{
+    const result = await authService.loginUser(req.body);
     res.json({
-      message: 'Login exitoso',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      message:'Inicio de sesión exitoso',
+      ...result
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Error del servidor', error: error.message });
+  }catch (error){
+    if (error.name === 'AuthError'){
+      logger.warn(`Intento de login fallido para ${req.body.email}:${error.message}`);
+      return res.status(error.statusCode || 400).json({message:error.message});
+    }
+    logger.error('Error en el inicio de sesión:', error);
+    res.status(500).json({message:'Error interno del servidor', error:error.message});
   }
-};
+    };

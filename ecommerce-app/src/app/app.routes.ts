@@ -20,8 +20,8 @@ export const routes:Routes=[
     loadComponent:()=> import ('./Pages/cart/cart.component').then(m=>m.CartComponent)
   },
   //Asumiendo que tendrás estas rutas en el futuro para el login/registro
-  //{path:'login',loadComponent:()=>import('./pages/login/login.component').then(m=>m.LoginComponent)},
-  //{path:'register',loadComponent:()=>import('./pages/register/register.component').then(m=>m.RegisterComponent)},
+  {path:'login',loadComponent:()=>import('./Pages/login/login.component').then(m=>m.LoginComponent)},
+  {path:'register',loadComponent:()=>import('./Pages/register/register.component').then(m=>m.RegisterComponent)},
   {
     path:'**',
     redirectTo:'',
