@@ -1,5 +1,6 @@
 import {Routes} from '@angular/router';
 import  {HomeComponent} from './Pages/home/home.component';
+import {authGuard} from '../guards/auth.guard';
 
 
 export const routes:Routes=[
@@ -17,11 +18,19 @@ export const routes:Routes=[
   },
   {
     path:'cart',
-    loadComponent:()=> import ('./Pages/cart/cart.component').then(m=>m.CartComponent)
+    loadComponent:()=> import ('./Pages/cart/cart.component').then(m=>m.CartComponent),
+    canActivate:[authGuard]
   },
-  //Asumiendo que tendrás estas rutas en el futuro para el login/registro
-  {path:'login',loadComponent:()=>import('./Pages/login/login.component').then(m=>m.LoginComponent)},
-  {path:'register',loadComponent:()=>import('./Pages/register/register.component').then(m=>m.RegisterComponent)},
+  {path:'checkout',
+    loadComponent:()=>import('./Pages/checkout/checkout.component').then(m=>m.CheckoutComponent),
+    canActivate:[authGuard]
+  },
+  {path:'login',
+    loadComponent:()=>import('./Pages/login/login.component').then(m=>m.LoginComponent)
+  },
+  {path:'register',
+    loadComponent:()=>import('./Pages/register/register.component').then(m=>m.RegisterComponent)
+  },
   {
     path:'**',
     redirectTo:'',
