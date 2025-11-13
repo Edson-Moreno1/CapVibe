@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service'; // Importa tu AuthService
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent,HttpErrorResponse } from '@angular/common/http';
+import { Observable,throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service'; // Importa tu AuthServic
+import { Router } from '@angular/router';
+
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) {} // Inyecta AuthService
+  constructor(private authService: AuthService,
+              private router: Router
+  ) {} // Inyecta AuthService
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Obtiene el token actual del AuthService
@@ -22,6 +27,16 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     
-    return next.handle(request);
+    return next.handle(request).pipe(
+      catchError((error:HttpErrorResponse)=>{
+        if(error.status===401){
+          console.error('Interceptor: Error 401. Token expirado o invalido. Deslogueando...');
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        }
+        return throwError(()=>error);
+      })
+    );
+    
   }
 }

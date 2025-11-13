@@ -11,7 +11,7 @@ class AuthError extends Error {
     }
 
     export const registerUser = async (userData) => {
-        const { name,email,password,role} = userData;
+        const { name,email,password} = userData;
 
         // Verificar si el usario ya existe
         const existingUser = await User.findOne({email});
@@ -19,7 +19,7 @@ class AuthError extends Error {
             throw new AuthError('Usario ya existe');
         }
         // Crear nuevo usuario
-        const user = new User({name,email,password,role});
+        const user = new User({name,email,password});
         await user.save();
         
         const token = jwt.sign({userId: user._id},process.env.JWT_SECRET,{expiresIn:'7d'});
