@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -36,7 +36,20 @@ userSchema.pre('save', async function(next) {
 
 // Método para comparar passwords
 userSchema.methods.comparePassword = async function(password) {
-  return await bcrypt.compare(password, this.password);
+  
+  // --- AÑADIR ESTOS LOGS ---
+  console.log('--- DEBUG: User.js (comparePassword) ---');
+  console.log('Password recibida (texto plano):', password);
+  console.log('Hash almacenado (en this.password):', this.password);
+  
+  // 3. Ejecutamos la comparación
+  const isMatch = await bcrypt.compare(password, this.password);
+  
+  // 4. Imprimimos el resultado
+  console.log('Resultado de bcrypt.compare (isMatch):', isMatch);
+  // ------------------------------------
+
+  return isMatch;
 };
 
 export default mongoose.model('User', userSchema);

@@ -5,6 +5,7 @@ import {withInterceptorsFromDi,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideHttpClient, withInterceptors } from '@angular/common/http'; 
 import { routes } from './app.routes';
 import { AuthInterceptor } from './interceptors/auth.interceptor'; // <-- 2. Importa tu Interceptor
+import {JwtHelperService, JWT_OPTIONS} from '@auth0/angular-jwt';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,8 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    { provide: JWT_OPTIONS, useValue:{}},
+    JwtHelperService
   ]
 };

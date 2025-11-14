@@ -22,7 +22,16 @@ class AuthError extends Error {
         const user = new User({name,email,password});
         await user.save();
         
-        const token = jwt.sign({userId: user._id},process.env.JWT_SECRET,{expiresIn:'7d'});
+        const payload ={
+            userId: user._id,
+            role: user.role
+        };
+
+        const token = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            {expiresIn: '7d'}
+        );
 
         return {
             token, 
@@ -37,6 +46,11 @@ class AuthError extends Error {
     export const loginUser = async (credentials)=> {
         const {email,password} = credentials;
 
+        
+        console.log('--- DEBUG: authService.js (loginUser) ---');
+    console.log('Email recibido:', email);
+    console.log('Password recibida (texto plano):', password);
+
         //Buscar usuario
         const user = await User.findOne({email});
         if (!user){
@@ -49,7 +63,16 @@ class AuthError extends Error {
         }
 
         // Generar token JWT
-        const token = jwt.sign({userId: user._id},process.env.JWT_SECRET,{expiresIn:'7d'});
+        const payload = {
+            userId: user._id,
+            role: user.role
+        };
+
+        const token = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            {expiresIn: '7d'}   
+        );
 
         return {
             token,
