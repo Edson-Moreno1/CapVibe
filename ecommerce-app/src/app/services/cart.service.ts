@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Product } from '../Models/products';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { CartItem } from '../Models/cart';
+import { environment } from '../../environments/environment.development';
 
 
 @Injectable({
@@ -9,6 +10,7 @@ import { CartItem } from '../Models/cart';
 })
 export class CartService {
 
+  private baseUrl = `${environment.BACK_URL}/cart`;
   
   private cartItems: CartItem[] = [];
   

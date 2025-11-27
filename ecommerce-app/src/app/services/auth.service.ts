@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; // <-- 1. Importa HttpClient
 import { Router } from '@angular/router'; // <-- 2. Importa Router
 import { BehaviorSubject, Observable, tap } from 'rxjs'; // <-- 3. Importa tap
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   // URL base de tu API (ajusta si es necesario, usa environment si prefieres)
+  private baseUrl = `${environment.BACK_URL}/auth`;
   private apiUrl = '/api/auth'; // Usando el proxy o tu URL completa
   
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken()); // <-- 6. Comprueba token al inicio
