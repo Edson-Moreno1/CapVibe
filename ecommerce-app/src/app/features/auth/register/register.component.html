@@ -1,0 +1,88 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold text-center text-gray-900">Crear Cuenta</h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+        <input 
+          id="name" 
+          type="text" 
+          formControlName="name" 
+          required 
+          class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          [class.border-red-500]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+        >
+        @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            @if (registerForm.get('name')?.errors?.['required']) {
+              <span>El nombre es obligatorio.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+        <input 
+          id="email" 
+          type="email" 
+          formControlName="email" 
+          required 
+          class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          [class.border-red-500]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+        >
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            @if (registerForm.get('email')?.errors?.['required']) {
+              <span>El correo es obligatorio.</span>
+            }
+            @if (registerForm.get('email')?.errors?.['email']) {
+              <span>Por favor, ingresa un correo válido.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input 
+          id="password" 
+          type="password" 
+          formControlName="password" 
+          required 
+          class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          [class.border-red-500]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+        >
+        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            @if (registerForm.get('password')?.errors?.['required']) {
+              <span>La contraseña es obligatoria.</span>
+            }
+            @if (registerForm.get('password')?.errors?.['minlength']) {
+              <span>La contraseña debe tener al menos 6 caracteres.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button 
+          type="submit" 
+          [disabled]="registerForm.invalid"
+          class="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Registrarme
+        </button>
+      </div>
+    </form>
+
+    <p class="text-sm text-center text-gray-600">
+      ¿Ya tienes cuenta? 
+      <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+        Inicia sesión aquí
+      </a>
+    </p>
+  </div>
+</div>

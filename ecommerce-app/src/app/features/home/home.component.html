@@ -1,0 +1,107 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <!-- Header con efecto -->
+  <div class="text-center mb-12">
+    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Productos Destacados</h2>
+    <div class="h-1 w-20 bg-gradient-to-r from-yellow-400 to-yellow-600 mx-auto rounded-full"></div>
+  </div>
+
+  <!-- Carrusel Principal -->
+  <div class="relative w-full max-w-4xl mx-auto">
+    <!-- Contenedor principal con efecto de sombra dinámica -->
+    <div class="relative h-96 md:h-[500px] overflow-hidden rounded-2xl shadow-2xl group">
+      <!-- Fondo gradiente dinámico -->
+      <div class="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-50"></div>
+
+      <!-- Imágenes con transición suave -->
+      @for (product of featuredProducts; track product._id; let i = $index) {
+        <div 
+          [class]="currentIndex === i ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'" 
+          class="absolute inset-0 transition-all duration-700 ease-in-out">
+          <a [routerLink]="['/products', product._id]" class="block w-full h-full">
+            <img 
+              [src]="product.images[0]" 
+              class="w-full h-full object-contain p-6 md:p-8" 
+              alt="{{ product.name }}"
+              loading="lazy">
+          </a>
+        </div>
+      }
+
+      <!-- Overlay de degradado inferior -->
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+
+      <!-- Botones de navegación mejorados -->
+      <button 
+        (click)="prevSlide()" 
+        type="button" 
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 group-hover:bg-yellow-400 group-hover:text-white">
+        <svg class="w-6 h-6 text-gray-800 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+
+      <button 
+        (click)="nextSlide()" 
+        type="button" 
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 group-hover:bg-yellow-400 group-hover:text-white">
+        <svg class="w-6 h-6 text-gray-800 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Indicadores con información del producto -->
+    <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <!-- Información del producto actual -->
+      <div class="flex-1 text-center md:text-left">
+        @if (featuredProducts[currentIndex]) {
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ featuredProducts[currentIndex].name }}</h3>
+          <p class="text-lg text-yellow-600 font-semibold mb-2">{{ featuredProducts[currentIndex].price | currency }}</p>
+          @if (featuredProducts[currentIndex].description) {
+            <p class="text-sm text-gray-600 line-clamp-2">{{ featuredProducts[currentIndex].description }}</p>
+          }
+          <a [routerLink]="['/products', featuredProducts[currentIndex]._id]" class="inline-block mt-4 px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors">
+            Ver Detalles
+          </a>
+        }
+      </div>
+
+      <!-- Indicadores de puntos -->
+      <div class="flex gap-3 items-center justify-center flex-wrap">
+        @for (product of featuredProducts; track product._id; let i = $index) {
+          <button
+            (click)="goToSlide(i)"
+            [attr.aria-label]="'Go to slide ' + (i + 1)"
+            [class]="currentIndex === i ? 'bg-yellow-500 w-10' : 'bg-gray-300 w-3 hover:bg-gray-400'"
+            class="h-3 rounded-full transition-all duration-500 ease-out">
+            <span class="sr-only">Slide {{ i + 1 }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Contador de slides -->
+    <div class="text-center mt-4 text-sm text-gray-500 font-medium">
+      {{ currentIndex + 1 }} / {{ featuredProducts.length }}
+    </div>
+  </div>
+
+  <!-- Sección adicional: Características destacadas -->
+  <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all hover:scale-105">
+      <div class="text-4xl mb-3">⚡</div>
+      <h4 class="font-semibold text-gray-900 text-lg">Envío Rápido</h4>
+      <p class="text-sm text-gray-700 mt-2">Entregas en 24-48 horas</p>
+    </div>
+    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all hover:scale-105">
+      <div class="text-4xl mb-3">✓</div>
+      <h4 class="font-semibold text-gray-900 text-lg">100% Auténtico</h4>
+      <p class="text-sm text-gray-700 mt-2">Garantía de calidad verificada</p>
+    </div>
+    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all hover:scale-105">
+      <div class="text-4xl mb-3">🔄</div>
+      <h4 class="font-semibold text-gray-900 text-lg">Cambios Fáciles</h4>
+      <p class="text-sm text-gray-700 mt-2">30 días para cambiar o devolver</p>
+    </div>
+  </div>
+</div>

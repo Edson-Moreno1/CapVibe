@@ -1,0 +1,82 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Tu Carrito</h1>
+
+  @if (cartItems.length > 0) {
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <div class="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3 px-6">Producto</th>
+                <th scope="col" class="py-3 px-6">Precio</th>
+                <th scope="col" class="py-3 px-6">Cantidad</th>
+                <th scope="col" class="py-3 px-6">Subtotal</th>
+                <th scope="col" class="py-3 px-6"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of cartItems; track item.product._id) {
+                <tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="py-4 px-6 font-medium text-gray-900">
+                    <div class="flex items-center">
+                      <img [src]="item.product.images[0]" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded-md mr-4">
+                      <span>{{ item.product.name }}</span>
+                    </div>
+                  </td>
+                  <td class="py-4 px-6">{{ item.product.price | currency }}</td>
+                  <td class="py-4 px-6">
+                    <div class="flex items-center">
+                      <button (click)="adjustQuantity(item, -1)" class="px-2 py-1 border border-gray-300 rounded-l-md hover:bg-gray-100">-</button>
+                      <input type="number" [value]="item.quantity" (change)="updateQuantity(item.product._id, $event)" min="1" class="w-12 text-center border-t border-b border-gray-300">
+                      <button (click)="adjustQuantity(item, 1)" class="px-2 py-1 border border-gray-300 rounded-r-md hover:bg-gray-100">+</button>
+                    </div>
+                  </td>
+                  <td class="py-4 px-6 font-semibold">{{ item.product.price * item.quantity | currency }}</td>
+                  <td class="py-4 px-6">
+                    <button (click)="removeItem(item.product._id)" class="text-red-500 hover:text-red-700 font-medium">Eliminar</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-1">
+        <div class="bg-white p-6 rounded-lg shadow-md h-fit">
+          <h2 class="text-xl font-bold mb-4">Resumen</h2>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span>Subtotal</span>
+              <span class="font-medium">{{ totalPrice | currency }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Envío</span>
+              <span class="font-medium">Gratis</span>
+            </div>
+          </div>
+          <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between font-bold text-lg">
+            <span>Total</span>
+            <span>{{ totalPrice | currency }}</span>
+          </div>
+          <a routerLink="/checkout" class="block text-center w-full mt-6 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+            Proceder al Pago
+          </a>
+          <a routerLink="/products" class="block text-center w-full mt-3 text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
+  o Seguir Comprando
+</a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="text-center py-16 bg-white rounded-lg shadow-md">
+      <h3 class="text-2xl font-semibold mb-2">Tu carrito está vacío</h3>
+      <p class="text-gray-500 mb-6">Parece que aún no has añadido productos a tu carrito.</p>
+      <a routerLink="/products" class="bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+        Ver Productos
+      </a>
+    </div>
+  }
+</div>

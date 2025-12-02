@@ -1,0 +1,32 @@
+<header class="bg-white shadow-md sticky top-0 z-40">
+  <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-4">
+    <a routerLink="/" class="text-2xl font-bold text-indigo-600">
+      CapVibe
+    </a>
+
+    <div class="hidden md:flex items-center space-x-6 flex-grow justify-center">
+      <a routerLink="/" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors" routerLinkActive="text-indigo-600 font-semibold" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+      <a routerLink="/products" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors" routerLinkActive="text-indigo-600 font-semibold">Productos</a>
+      </div>
+
+    <div class="flex items-center space-x-4">
+
+      @if (isLoggedIn) {
+        <a routerLink="/profile" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Perfil</a>
+        <button (click)="logout()" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Logout</button>
+      } @else {
+        <a routerLink="/login" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Login</a>
+        <a routerLink="/register" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Registro</a>
+      }
+
+      <a routerLink="/cart" class="relative text-gray-600 hover:text-indigo-600 transition-colors">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        @if (cartItemCount > 0) {
+          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {{ cartItemCount }}
+          </span>
+        }
+      </a>
+    </div>
+  </nav>
+</header>

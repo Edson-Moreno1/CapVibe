@@ -1,0 +1,389 @@
+{
+  "summary": {
+    "total": 42,
+    "successful": 39,
+    "failed": 3,
+    "successRate": "92.9%",
+    "timestamp": "2025-09-10T01:53:57.372Z"
+  },
+  "results": [
+    {
+      "test": "User Registration",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": 201,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.053Z"
+    },
+    {
+      "test": "Admin Registration",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": 201,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.125Z"
+    },
+    {
+      "test": "User Login",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.194Z"
+    },
+    {
+      "test": "Invalid Login",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.266Z"
+    },
+    {
+      "test": "Create Category (No Auth)",
+      "endpoint": "/categories",
+      "method": "POST",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.267Z"
+    },
+    {
+      "test": "Create Category (Admin)",
+      "endpoint": "/categories",
+      "method": "POST",
+      "status": 500,
+      "success": false,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.268Z"
+    },
+    {
+      "test": "Get All Categories",
+      "endpoint": "/categories",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.271Z"
+    },
+    {
+      "test": "Create Product",
+      "endpoint": "/products",
+      "method": "POST",
+      "status": 400,
+      "success": false,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.273Z"
+    },
+    {
+      "test": "Get All Products",
+      "endpoint": "/products",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.278Z"
+    },
+    {
+      "test": "Get User Profile",
+      "endpoint": "/users/profile",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.280Z"
+    },
+    {
+      "test": "Update User Profile",
+      "endpoint": "/users/profile",
+      "method": "PUT",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.287Z"
+    },
+    {
+      "test": "Get All Users (Admin)",
+      "endpoint": "/users",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.292Z"
+    },
+    {
+      "test": "Get All Users (Normal User)",
+      "endpoint": "/users",
+      "method": "GET",
+      "status": 403,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.293Z"
+    },
+    {
+      "test": "Get Cart",
+      "endpoint": "/cart",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.301Z"
+    },
+    {
+      "test": "Add to Cart (Invalid Product)",
+      "endpoint": "/cart/add",
+      "method": "POST",
+      "status": 404,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.306Z"
+    },
+    {
+      "test": "Clear Cart",
+      "endpoint": "/cart/clear",
+      "method": "DELETE",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.309Z"
+    },
+    {
+      "test": "Create Shipping Address",
+      "endpoint": "/shipping-addresses",
+      "method": "POST",
+      "status": 201,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.317Z"
+    },
+    {
+      "test": "Get Shipping Addresses",
+      "endpoint": "/shipping-addresses",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.320Z"
+    },
+    {
+      "test": "Get Shipping Address by ID",
+      "endpoint": "/shipping-addresses/68c0da355881ac6759332a0e",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.323Z"
+    },
+    {
+      "test": "Update Shipping Address",
+      "endpoint": "/shipping-addresses/68c0da355881ac6759332a0e",
+      "method": "PUT",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.327Z"
+    },
+    {
+      "test": "Delete Shipping Address",
+      "endpoint": "/shipping-addresses/68c0da355881ac6759332a0e",
+      "method": "DELETE",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.330Z"
+    },
+    {
+      "test": "Create Payment Method",
+      "endpoint": "/payment-methods",
+      "method": "POST",
+      "status": 201,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.336Z"
+    },
+    {
+      "test": "Get Payment Methods",
+      "endpoint": "/payment-methods",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.339Z"
+    },
+    {
+      "test": "Get Payment Method by ID",
+      "endpoint": "/payment-methods/68c0da355881ac6759332a1b",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.341Z"
+    },
+    {
+      "test": "Update Payment Method",
+      "endpoint": "/payment-methods/68c0da355881ac6759332a1b",
+      "method": "PUT",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.344Z"
+    },
+    {
+      "test": "Delete Payment Method",
+      "endpoint": "/payment-methods/68c0da355881ac6759332a1b",
+      "method": "DELETE",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.347Z"
+    },
+    {
+      "test": "Create Order",
+      "endpoint": "/orders",
+      "method": "POST",
+      "status": 400,
+      "success": false,
+      "details": "Expected to fail with invalid product ID",
+      "timestamp": "2025-09-10T01:53:57.349Z"
+    },
+    {
+      "test": "Get User Orders",
+      "endpoint": "/orders/my-orders",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.357Z"
+    },
+    {
+      "test": "Get All Orders (Admin)",
+      "endpoint": "/orders",
+      "method": "GET",
+      "status": 200,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.359Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/products",
+      "method": "POST",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.360Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/products/123",
+      "method": "PUT",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.361Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/products/123",
+      "method": "DELETE",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.361Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/users/profile",
+      "method": "GET",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.362Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/categories",
+      "method": "POST",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.362Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/cart",
+      "method": "GET",
+      "status": 500,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.363Z"
+    },
+    {
+      "test": "Unauthorized Access Test",
+      "endpoint": "/orders",
+      "method": "POST",
+      "status": 401,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.364Z"
+    },
+    {
+      "test": "Invalid User Registration",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.365Z"
+    },
+    {
+      "test": "Invalid User Registration",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.366Z"
+    },
+    {
+      "test": "Invalid User Registration",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.366Z"
+    },
+    {
+      "test": "Invalid Product Creation",
+      "endpoint": "/products",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.368Z"
+    },
+    {
+      "test": "Invalid Product Creation",
+      "endpoint": "/products",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.370Z"
+    },
+    {
+      "test": "Invalid Product Creation",
+      "endpoint": "/products",
+      "method": "POST",
+      "status": 400,
+      "success": true,
+      "details": "",
+      "timestamp": "2025-09-10T01:53:57.372Z"
+    }
+  ]
+}
