@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { OrderData } from '../../Models/orderdata';
+import { OrderData } from '../../../core/models/order.interface';
+
 
 
 
@@ -29,7 +30,7 @@ export class ConfirmationComponent implements OnInit{
     }
   }
 
-formatDate(dateString: string): string {
+formatDate(dateString: string ): string  {
   const date = new Date(dateString);
   return date.toLocaleDateString('es-MX',{
     year: 'numeric',

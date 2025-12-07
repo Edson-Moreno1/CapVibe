@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProductService } from '../../services/product.service';
-import { Product } from '../../Models/products';
+import { ProductService } from '../../core/services/product.service';
+import { Product } from '../../core/models/product.interface';
 import { interval, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -33,9 +33,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
-    this.productService.getProducts(1).subscribe({
+    this.productService.getProducts(1).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
-        const sortedProducts = response.products.sort((a, b) => a.price - b.price);
+        const products : Product[] = (response as any).products ?? [];
+        const sortedProducts = products.sort((a, b) => a.price - b.price);
         this.featuredProducts = sortedProducts.slice(0, 10);
       },
       error: (err) => {

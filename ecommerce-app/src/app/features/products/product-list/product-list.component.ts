@@ -1,68 +1,70 @@
-import { Component,OnInit } from "@angular/core";
+import { Component,OnInit,inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ProductService } from "../../services/product.service";
-import { RouterLink } from "@angular/router";
-import { Product } from "../../Models/products";
-import { ApiResponse } from "../../Models/api-response";
-import { CartService } from "../../services/cart.service";
+import { RouterModule } from "@angular/router";
+//Imports de servicios y modelos
+import { ProductService } from '../../../core/services/product.service';
+import { Product } from '../../../core/models/product.interface';
+import { ApiResponse } from '../../../core/models/api-response.interface'
+import { CartService } from '../../../core/services/cart.service';
+import { ImgFallbackDirective } from "../../../shared/directives/img-fallback.directive";
+import { LoaderComponent } from "../../../shared/components/loader/loader.component";
+
 
 @Component({
   selector: "app-product-list",
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule,LoaderComponent,ImgFallbackDirective, RouterModule],
   templateUrl: "./product-list.component.html",
   styleUrls: ["./product-list.component.css"],  
 })
 
 export class ProductListComponent implements OnInit {
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
+
   products: Product[] = [];
+  isLoading: boolean = false;
+  errorMessage:string ='';
 
   currentPage: number = 1;
-  totalPages: number = 0;
+  totalPages: number = 1;
+  itemsPerPage: number = 10;
 
-  successMessage: string | null =null;
-
-
-  constructor(private productService: ProductService, private cartService:CartService) {}
-
-  ngOnInit(): void{
+  ngOnInit(): void {
     this.loadProducts();
   }
-    loadProducts():void{
-      this.productService.getProducts(this.currentPage).subscribe({
-        next:(response:ApiResponse)=>{
-          this.products=response.products;
-          this.currentPage = response.currentPage;
-          this.totalPages = response.totalPages;
-          console.log('Pagina actual:',this.currentPage,'de',this.totalPages);
-        },
-        error:(err)=>{
-          console.log('Error al obtener los productos:',err);
-        }
 
-      });
-    }
-   
-    
 
-    nextPage(): void{
-      if(this.currentPage<this.totalPages){
-        this.currentPage++;
-        this.loadProducts();
+  loadProducts(): void {
+    this.isLoading = true;
+    this.productService.getProducts(this.currentPage, this.itemsPerPage).subscribe({
+      next:(response:any) =>{
+        this.products = response.products || response.data || [];
+        this.totalPages = response.totalPages || 1;
+        this.isLoading = false;
+        window.scrollTo({top:0, behavior: 'smooth'});
+      },
+      error:(err)=>{
+        console.error('Error cargando productos:', err);
+        this.errorMessage = 'Error al cargar los productos. Intente más tarde.';
+        this.isLoading = false;
       }
-    }
-    previousPage(): void{
-      if(this.currentPage>1){
-        this.currentPage--;
+    });
+  }
+
+    changePage(newPage:number){
+      if(newPage <1 && newPage <= this.totalPages && newPage !== this.currentPage){
+        this.currentPage = newPage;
         this.loadProducts();
       }
     }
 
-    addToCart(product: Product) {
-      this.cartService.addToCart(product);
-      this.successMessage = `${product.name} ha sido añadido al carrito.`;
-      setTimeout(() =>{
-        this.successMessage = null;
-      },3000);
+  addToCart(product: Product){
+    if(!product._id) return;
+
+    this.cartService.addToCart(product._id,1).subscribe({
+      next:()=> console.log(`Producto ${product.name} agregado!`),
+      error:(err)=> console.error('Error al agregar al carrito',err)   
+    });
   }
 }

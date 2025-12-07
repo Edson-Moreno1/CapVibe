@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProductService } from '../../services/product.service';
-import { Product } from '../../Models/products';
+import { ProductService } from '../../../core/services/product.service';
+import { Product } from '../../../core/models/product.interface';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../services/cart.service';
+import { CartService } from '../../../core/services/cart.service';
+
 
 
 @Component({
@@ -49,7 +50,7 @@ export class ProductDetailComponent implements OnInit {
   }
   addToCart(product: Product): void {
     if (product){
-      this.cartService.addToCart(product);
+      this.cartService.addToCart(product._id);
       console.log('Producto agregado desde Detalle:', product.name);
     }
 }

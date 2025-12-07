@@ -10,7 +10,7 @@ import { environment } from "../../../environments/environment"
 
 export class AuthService {
 
-    private readonly apiUrl = `${environment.BACK_URL}/auth`;
+    private readonly apiUrl = `${(environment as any).BACK_URL}/auth`;
 
     private _currentUser = new BehaviorSubject<User | null>(this.getUserFromStorage());
 

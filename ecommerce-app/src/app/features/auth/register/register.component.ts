@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service'; // Aunque aún no lo usemos para el registro real
+import { AuthService } from '../../../core/services/auth.service'; // Aunque aún no lo usemos para el registro real
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

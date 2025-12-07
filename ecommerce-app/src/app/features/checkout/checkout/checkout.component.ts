@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../services/cart.service';
-import { CartItem } from '../../Models/cart';
+import { CartService } from '../../../core/services/cart.service';
+import { CartItem } from '../../../core/models/cart-item.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
