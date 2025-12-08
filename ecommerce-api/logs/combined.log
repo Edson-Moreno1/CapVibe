@@ -504,3 +504,14 @@
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:45:02","url":"/api/products"}
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:45:22","url":"/api/products"}
 {"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:45:50","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:49:34","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"POST","service":"ecommerce-api","timestamp":"2025-12-07 18:53:11","url":"/api/products"}
+{"category":"MLB","ip":"::1","level":"info","message":"Producto creado exitosamente","name":"Los Angeles Dodgers Hyperfly Katakana X MLB 59FIFTY Cerrada","productId":"693621770360250bb18965e1","service":"ecommerce-api","timestamp":"2025-12-07 18:53:12"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:53:13","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:53:26","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:53:28","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:54:27","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:54:29","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:56:02","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:56:03","url":"/api/products"}
+{"ip":"::1","level":"info","message":"Request recibido","method":"GET","service":"ecommerce-api","timestamp":"2025-12-07 18:56:04","url":"/api/products"}
