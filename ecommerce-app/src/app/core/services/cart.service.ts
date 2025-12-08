@@ -11,7 +11,8 @@ import { environment } from "../../../environments/environment";
 
 export class CartService {
     private http= inject(HttpClient);
-    private apiUrl = `${(environment as any).BACK_URL}/cart`;
+    //private apiUrl = `${(environment as any).BACK_URL}/cart`;
+    private readonly apiUrl = 'http://localhost:3000/api/cart';
 
     private _cart = new BehaviorSubject<any[]>([]);
     public cart$ = this._cart.asObservable();

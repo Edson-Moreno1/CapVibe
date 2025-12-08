@@ -22,5 +22,15 @@ export class ProductService{
     getProductById(id:string): Observable<Product>{
         return this.http.get<Product>(`${this.apiUrl}/${id}`);
     }
-    // Métodos extra para admin (Rúbrica V.2 CRUD) se agregarán aquí luego
+    createProduct(productData: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, productData);
+  }
+
+  updateProduct(id: string, productData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, productData);
+  }
+
+  deleteProduct(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
 }
