@@ -91,11 +91,18 @@ export class ProductFormComponent implements OnInit {
 
     // Preparamos los datos
     const formData = this.productForm.value;
+
+    const imageUrl = formData.images ? formData.images.trim():'';
+
+    const imagesArray = imageUrl ? [imageUrl] : [];
     
     // Convertimos la imagen de string a array (tu backend espera array)
     const payload = {
       ...formData,
-      images: formData.images ? [formData.images] : [] 
+      images: imagesArray,
+
+      price:Number(formData.price),
+      stock:Number(formData.stock),
     };
 
     if (this.isEditMode && this.productId) {

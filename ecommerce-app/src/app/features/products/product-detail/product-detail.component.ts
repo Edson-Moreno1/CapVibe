@@ -1,57 +1,66 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../core/models/product.interface';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+
+// Imports de Arquitectura
+import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
+import { Product } from '../../../core/models/product.interface';
 
-
+// Imports Visuales (Loader y Directiva)
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterModule, LoaderComponent, ImgFallbackDirective],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css'
 })
 export class ProductDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
 
-  product: Product | undefined;
-  loading: boolean = true;
-  error: string | null = null; 
-  constructor(
-    private route: ActivatedRoute,
-    private productService: ProductService,
-    private cartService:CartService
-  ) { }
+  product: Product | null = null;
+  isLoading: boolean = true;
+  quantity: number = 1; // <--- Variable que faltaba para el selector + / -
 
   ngOnInit(): void {
-    this.loadProductDetails();
-  }
-
-  loadProductDetails(): void {
-    const productId= this.route.snapshot.paramMap.get('id');
-    if (!productId) {
-      this.loading = false;
-      this.error = 'Error: ID de producto no encontrado en la URL.';
-      return;
-    }
-    this.productService.getProductById(productId).subscribe({
-      next:(data)=>{
-        this.product = data;
-        this.loading = false;
-      },
-      error:(err)=>{
-        console.error('Error al cargar los detalles del producto:', err);
-        this.error = 'No se pudo cargr el producto.Intente màs tarde.';
-        this.loading = false;
+    // Obtenemos el ID de la URL
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadProduct(id);
       }
     });
   }
-  addToCart(product: Product): void {
-    if (product){
-      this.cartService.addToCart(product._id);
-      console.log('Producto agregado desde Detalle:', product.name);
-    }
-}
+
+  loadProduct(id: string) {
+    this.isLoading = true;
+    this.productService.getProductById(id).subscribe({
+      next: (product: any) => { // 'any' temporal para flexibilidad
+        this.product = product.data || product; // Adaptamos respuesta
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  addToCart() {
+    if (!this.product || !this.product._id) return;
+
+    // Llamamos al servicio con la cantidad seleccionada
+    this.cartService.addToCart(this.product._id, this.quantity).subscribe({
+      next: () => {
+        alert('Producto agregado al carrito');
+        // Opcional: Resetear cantidad o redirigir
+      },
+      error: (err) => console.error('Error agregando al carrito', err)
+    });
+  }
 }

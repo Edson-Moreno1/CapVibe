@@ -1,15 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
-
-// --- IMPORTS DE CORE (Arquitectura Nueva) ---
 import { AuthService } from '../../core/services/auth.service';
-import { User } from '../../core/models/user.interface';
-
-// --- IMPORTS LEGACY (Lo que aún no movemos a core) ---
 import { CartService } from '../../core/services/cart.service';
-// import { CartItem } from '../../Models/cart'; // <--- ELIMINADO PORQUE DABA ERROR
+import { LayoutService } from '../../core/services/layout.service';
+import { User } from '../../core/models/user.interface';
 
 @Component({
   selector: 'app-header',
@@ -18,47 +13,50 @@ import { CartService } from '../../core/services/cart.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  cartItemCount: number = 0;
-  isLoggedIn: boolean = false;
-  currentUser: User | null = null;
-  
-  private cartSubscription!: Subscription;
-  private authSubscription!: Subscription;
+export class HeaderComponent implements OnInit {
+  private authService = inject(AuthService);
+  private cartService = inject(CartService);
+  private layoutService = inject(LayoutService);
 
-  constructor(
-    private cartService: CartService,
-    private authService: AuthService
-  ) {}
+  currentUser: User | null = null;
+  isLoggedIn = false;
+  cartItemCount = 0;
+  dropdownOpen = false;
 
   ngOnInit(): void {
-    // --- LÓGICA DEL CARRITO ---
-    // Usamos 'any[]' temporalmente para evitar errores de importación 
-    // hasta que refactoricemos el modelo del carrito en Core.
-    this.cartSubscription = this.cartService.cart$.subscribe((items: any[]) => {
-      this.cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
-    });
-
-    // --- LÓGICA DE AUTH (CORREGIDA) ---
-    // Escuchamos al BehaviorSubject del usuario actual
-    this.authSubscription = this.authService.currentUser$.subscribe(user => {
-      // Si 'user' tiene datos es true, si es null es false
-      this.isLoggedIn = !!user; 
+    this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      this.isLoggedIn = !!user;
+    });
+
+    this.cartService.cart$.subscribe(cart => {
+      this.cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.cartSubscription) {
-      this.cartSubscription.unsubscribe();
-    }
-    if(this.authSubscription){
-      this.authSubscription.unsubscribe();
-    }
+  toggleSidebar() {
+    this.layoutService.toggleSidebar();
   }
 
-  logout(): void {
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  closeDropdown() {
+    this.dropdownOpen = false;
+  }
+
+  logout() {
     this.authService.logout();
-    this.isLoggedIn = false;
+    this.closeDropdown();
+  }
+
+  // Cerrar dropdown al hacer click fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative') && this.dropdownOpen) {
+      this.closeDropdown();
+    }
   }
 }

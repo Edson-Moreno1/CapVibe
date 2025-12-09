@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { OrderData } from '../../../core/models/order.interface';
-
-
-
 
 @Component({
   selector: 'app-confirmation',
@@ -14,30 +10,21 @@ import { OrderData } from '../../../core/models/order.interface';
   templateUrl: './confirmation.component.html',
   styleUrl: './confirmation.component.css'
 })
-export class ConfirmationComponent implements OnInit{
- order: OrderData | null = null;
+export class ConfirmationComponent implements OnInit {
+  order: OrderData | null = null;
 
-  constructor(private router: Router) {}
-  
-
-
-  ngOnInit(): void{
-    const orderDataStr = localStorage.getItem('orderData');
-    if (orderDataStr) {
-      this.order = JSON.parse(orderDataStr);
-    }else{
-      this.router.navigate(['/products']);
+  constructor(private router: Router) {
+    // Recuperar datos pasados por el router
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras?.state?.['order']) {
+      this.order = navigation.extras.state['order'];
     }
   }
 
-formatDate(dateString: string ): string  {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-MX',{
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-
-  });
-
+  ngOnInit(): void {
+    // Si no hay orden (acceso directo por URL), redirigir
+    /* if (!this.order) {
+       this.router.navigate(['/']);
+    } */
+  }
 }
-}//end

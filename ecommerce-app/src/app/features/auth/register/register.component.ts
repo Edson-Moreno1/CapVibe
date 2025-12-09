@@ -1,56 +1,60 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service'; // Aunque aún no lo usemos para el registro real
-import { HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+
+// Imports de Core
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  registerForm: FormGroup; // Propiedad para el formulario
-  errorMessage: string | null = null;
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService, // Lo inyectamos para futura implementación
-    private router: Router
-  ) {
+  registerForm: FormGroup;
+  isLoading: boolean = false;
+  errorMessage: string = '';
+
+  constructor() {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required], // Campo nombre: obligatorio
-      email: ['', [Validators.required, Validators.email]], // Campo email: obligatorio y formato email
-      password: ['', [Validators.required, Validators.minLength(6)]] // Campo password: obligatorio y mínimo 6 caracteres
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   onSubmit(): void {
-    this.errorMessage = null;
-    if (this.registerForm.valid) {
-      const userData = this.registerForm.value; // Obtiene name, email, password
-      
-      // Llama al método register del servicio
-      this.authService.register(userData).subscribe({
-        next: (response) => {
-          // Si el registro es exitoso
-          console.log('Registro exitoso:', response);
-          alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-          this.router.navigate(['/login']); // Redirige al Login
-        },
-       error: (err: HttpErrorResponse) => { // <-- 2. Captura el error HTTP
-          console.error('Error en el login:', err);
-          // Guarda el mensaje de error de la API o uno genérico
-          this.errorMessage = err.error?.message || 'Credenciales incorrectas o error del servidor.';
-        }
-      });
-      
-    } else {
-      console.log('Formulario de registro inválido');
-      this.registerForm.markAllAsTouched(); 
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
     }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const userData = this.registerForm.value;
+
+    this.authService.register(userData).subscribe({
+      next: () => {
+        // Éxito: Redirigir al Login para que inicie sesión
+        alert('Cuenta creada con éxito. Por favor inicia sesión.');
+        this.router.navigate(['/login']);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error registro:', err);
+        this.isLoading = false;
+        
+        // Mensaje de error del backend (ej. "El correo ya existe")
+        this.errorMessage = err.error?.message || 'No se pudo crear la cuenta.';
+      }
+    });
   }
 }

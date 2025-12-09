@@ -1,0 +1,132 @@
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  
+  <app-loader [isLoading]="isLoading" message="Procesando pago seguro..."></app-loader>
+
+  <h1 class="text-3xl font-bold mb-8 flex items-center gap-2">
+    <i class="bi bi-credit-card-2-front"></i> Finalizar Compra
+  </h1>
+
+  <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="lg:col-span-2 space-y-6">
+      
+      <div class="card bg-base-100 shadow-lg" formGroupName="contact">
+        <div class="card-body">
+          <h2 class="card-title text-primary border-b pb-2 mb-4">Información de Contacto</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">Nombre Completo</span></label>
+              <input type="text" formControlName="nombre" class="input input-bordered"
+                     [class.input-error]="checkoutForm.get('contact.nombre')?.invalid && checkoutForm.get('contact.nombre')?.touched" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Correo Electrónico</span></label>
+              <input type="email" formControlName="correo" class="input input-bordered"
+                     [class.input-error]="checkoutForm.get('contact.correo')?.invalid && checkoutForm.get('contact.correo')?.touched" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-lg" formGroupName="shipping">
+        <div class="card-body">
+          <h2 class="card-title text-primary border-b pb-2 mb-4">Dirección de Envío</h2>
+          <div class="form-control mb-4">
+            <label class="label"><span class="label-text">Calle y Número</span></label>
+            <input type="text" formControlName="direccion" class="input input-bordered"
+                   [class.input-error]="checkoutForm.get('shipping.direccion')?.invalid && checkoutForm.get('shipping.direccion')?.touched" />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">Ciudad</span></label>
+              <input type="text" formControlName="ciudad" class="input input-bordered"
+                     [class.input-error]="checkoutForm.get('shipping.ciudad')?.invalid && checkoutForm.get('shipping.ciudad')?.touched" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Estado</span></label>
+              <input type="text" formControlName="estado" class="input input-bordered"
+                     [class.input-error]="checkoutForm.get('shipping.estado')?.invalid && checkoutForm.get('shipping.estado')?.touched" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Código Postal</span></label>
+              <input type="text" formControlName="codigopostal" class="input input-bordered" placeholder="00000"
+                     [class.input-error]="checkoutForm.get('shipping.codigopostal')?.invalid && checkoutForm.get('shipping.codigopostal')?.touched" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-lg" formGroupName="payment">
+        <div class="card-body">
+          <h2 class="card-title text-primary border-b pb-2 mb-4">Método de Pago</h2>
+          
+          <div class="form-control mb-4">
+            <label class="label cursor-pointer justify-start gap-4">
+              <input type="radio" value="tarjeta" formControlName="metodo" class="radio radio-primary" checked />
+              <span class="label-text font-bold">Tarjeta de Crédito / Débito</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control md:col-span-2">
+              <label class="label"><span class="label-text">Número de Tarjeta</span></label>
+              <input type="text" formControlName="numeroTarjeta" class="input input-bordered font-mono" placeholder="0000 0000 0000 0000"
+                     [class.input-error]="checkoutForm.get('payment.numeroTarjeta')?.invalid && checkoutForm.get('payment.numeroTarjeta')?.touched" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Expiración (MM/YY)</span></label>
+              <input type="text" formControlName="expiracion" class="input input-bordered text-center" placeholder="12/28"
+                     [class.input-error]="checkoutForm.get('payment.expiracion')?.invalid && checkoutForm.get('payment.expiracion')?.touched" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">CVV</span></label>
+              <input type="password" formControlName="cvv" class="input input-bordered text-center" placeholder="123"
+                     [class.input-error]="checkoutForm.get('payment.cvv')?.invalid && checkoutForm.get('payment.cvv')?.touched" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div>
+      <div class="card bg-base-100 shadow-xl sticky top-24">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Resumen del Pedido</h2>
+          
+          <div class="overflow-y-auto max-h-64 mb-4 pr-2">
+            @for (item of cartItems; track item.product?._id) {
+              <div class="flex justify-between items-center py-2 border-b border-base-200 last:border-0">
+                <div class="flex-1">
+                  <p class="font-bold text-sm line-clamp-1">{{ item.product?.name }}</p>
+                  <p class="text-xs text-base-content/60">Cant: {{ item.quantity }}</p>
+                </div>
+                <div class="font-medium text-sm">
+                  ${{ (item.product?.price || 0) * item.quantity }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="flex justify-between items-center text-lg font-bold mt-2">
+            <span>Total</span>
+            <span class="text-primary">${{ totalPrice }}</span>
+          </div>
+
+          <div class="card-actions mt-6">
+            <button type="submit" class="btn btn-primary btn-block btn-lg" 
+                    [disabled]="checkoutForm.invalid || isLoading">
+              @if(isLoading) { <span class="loading loading-spinner"></span> }
+              Pagar Ahora
+            </button>
+          </div>
+          
+          <div class="text-center mt-4 text-xs text-base-content/50 flex items-center justify-center gap-1">
+            <i class="bi bi-shield-lock-fill"></i> Pagos 100% Seguros y Encriptados
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>

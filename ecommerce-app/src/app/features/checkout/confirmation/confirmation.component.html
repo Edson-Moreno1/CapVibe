@@ -1,87 +1,57 @@
-<div class="container mt-4">
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4">
+  
   @if (order) {
-    <div class="card shadow-sm">
-      <div class="card-body text-center py-5">
-        <div class="confirmation-icon mb-4">
-          <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #28a745;"></i>
+    <div class="card w-full max-w-2xl bg-base-100 shadow-xl border border-base-200 text-center">
+      <div class="card-body items-center py-10">
+        
+        <div class="w-20 h-20 rounded-full bg-success/20 flex items-center justify-center mb-6 text-success animate-bounce">
+          <i class="bi bi-check-lg text-5xl"></i>
         </div>
-        
-        <h2 class="mb-3">¡Gracias por tu compra!</h2>
-        <p class="lead mb-4">Tu pedido ha sido recibido y está siendo procesado.</p>
-        
-        <div class="alert alert-info mb-4">
-          <strong>Número de pedido:</strong> {{ order.orderNumber }}
-          <br>
-          <strong>Fecha:</strong> {{ order.date | date: 'short' }}
-        </div>
-        
-        <div class="row mt-5">
-          <div class="col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-header bg-light">
-                Información de envío
-              </div>
-              <div class="card-body text-start">
-                @if (order.shippingInfo) {
-                  <p><strong>Nombre:</strong> {{ order.shippingInfo.nombre }}</p>
-                  <p><strong>Correo:</strong> {{ order.shippingInfo.correo }}</p>
-                  <p><strong>Dirección:</strong> {{ order.shippingInfo.direccion }}</p>
-                  <p><strong>Ciudad:</strong> {{ order.shippingInfo.ciudad }}</p>
-                  <p><strong>Estado:</strong> {{ order.shippingInfo.estado }}</p>
-                  <p><strong>Código postal:</strong> {{ order.shippingInfo.codigopostal }}</p>
-                } @else {
-                  <p class="text-muted">No se requiere envío físico o información no disponible.</p>
-                }
-              </div>
-            </div>
+
+        <h1 class="text-4xl font-bold mb-2">¡Gracias por tu compra!</h1>
+        <p class="text-base-content/70 text-lg mb-8">Hemos recibido tu pedido correctamente.</p>
+
+        <div class="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-200 mb-8">
+          <div class="stat place-items-center">
+            <div class="stat-title">Número de Pedido</div>
+            <div class="stat-value text-primary text-2xl">{{ order.orderNumber || order.orderId | slice:0:8 }}</div>
           </div>
-          
-          <div class="col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-header bg-light">
-                Resumen del pedido
-              </div>
-              <div class="card-body">
-                @for (item of order.items ?? []; track item.product?._id) {
-                  <div class="d-flex justify-content-between mb-2">
-                    <div class="text-start">
-                      <span>{{ item.product?.name || 'Producto' }}</span>
-                      <small class="text-muted d-block">Cantidad: {{ item.quantity }}</small>
-                    </div>
-                    <span>${{ (item.product?.price || 0) * item.quantity }}</span>
-                  </div>
-                } @empty {
-                  <p class="text-muted">No hay items en esta orden.</p>
-                }
-                
-                <hr>
-                
-                <div class="d-flex justify-content-between">
-                  <strong>Total:</strong>
-                  <strong class="text-primary">${{ order.total }}</strong>
-                </div>
-              </div>
-            </div>
+          <div class="stat place-items-center">
+            <div class="stat-title">Fecha</div>
+            <div class="stat-value text-base font-medium">{{ order.date | date:'shortDate' }}</div>
+          </div>
+          <div class="stat place-items-center">
+            <div class="stat-title">Total Pagado</div>
+            <div class="stat-value text-success text-2xl">${{ order.total }}</div>
           </div>
         </div>
-        
-        <div class="mt-4">
-          <a routerLink="/products" class="btn btn-primary">
-            <i class="bi bi-bag"></i> Volver a la tienda
-          </a>
+
+        @if (order.shippingInfo) {
+          <div class="text-left w-full bg-base-200/50 p-6 rounded-box mb-8">
+            <h3 class="font-bold mb-2 flex items-center gap-2">
+              <i class="bi bi-truck"></i> Detalles de Envío
+            </h3>
+            <p>{{ order.shippingInfo.nombre }}</p>
+            <p class="text-sm opacity-75">{{ order.shippingInfo.direccion }}, {{ order.shippingInfo.ciudad }}</p>
+            <p class="text-sm opacity-75">{{ order.shippingInfo.estado }} - CP: {{ order.shippingInfo.codigopostal }}</p>
+          </div>
+        }
+
+        <div class="card-actions gap-4">
+          <a routerLink="/products" class="btn btn-primary px-8">Volver a la Tienda</a>
+          <a routerLink="/profile" class="btn btn-outline">Ver Mis Pedidos</a>
         </div>
+
       </div>
     </div>
   } @else {
-    <div class="text-center py-5">
-      <div class="alert alert-warning">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        No hay información de pedido disponible.
+    <div class="text-center">
+      <div class="alert alert-warning shadow-lg max-w-md">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>No se encontró información del pedido.</span>
       </div>
-      <p class="mt-3">Parece que no has realizado ningún pedido o la información no ha cargado.</p>
-      <a routerLink="/products" class="btn btn-primary mt-3">
-        <i class="bi bi-arrow-left me-2"></i>Volver a la tienda
-      </a>
+      <a routerLink="/" class="btn btn-link mt-4">Ir al Inicio</a>
     </div>
   }
+
 </div>

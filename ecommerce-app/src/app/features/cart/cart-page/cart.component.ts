@@ -1,65 +1,66 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../../core/services/cart.service';
 import { RouterModule } from '@angular/router';
-import { CartItem } from '../../../core/models/cart-item.interface';  
 import { Subscription } from 'rxjs';
+
+// Core & Shared
+import { CartService } from '../../../core/services/cart.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LoaderComponent, ImgFallbackDirective],
   templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.css']
+  styleUrl: './cart.component.css'
 })
 export class CartComponent implements OnInit, OnDestroy {
-  cartItems: CartItem[] = [];
-  totalPrice: number = 0;
+  private cartService = inject(CartService);
+  
+  cartItems: any[] = [];
+  total: number = 0;
+  isLoading: boolean = false;
   private cartSubscription!: Subscription;
 
-  constructor(private cartService: CartService) {}
-
   ngOnInit(): void {
-    // Nos suscribimos al observable 'cart$' del servicio.
-    this.cartSubscription = this.cartService.cart$.subscribe(items => {
-      this.cartItems = items;
-      this.totalPrice = this.cartService.getTotal(); // El total se recalcula con cada cambio.
-    });
-  }
-
-  // El método para el input numérico, convierte el valor a número
-  updateQuantity(productId: string, event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const quantity = parseInt(inputElement.value, 10);
+    this.isLoading = true;
     
-    // Validamos que la cantidad sea un número válido y mayor a 0
-    if (!isNaN(quantity) && quantity > 0) {
-      this.cartService.updateQuantity(productId, quantity);
-    } else {
-      // Si no es válido, restauramos la cantidad anterior del ítem
-      const item = this.cartItems.find(i => i.product._id === productId);
-      if (item) {
-        inputElement.value = item.quantity.toString();
+    this.cartSubscription = this.cartService.cart$.subscribe({
+      next: (items) => {
+        this.cartItems = items;
+        this.calculateTotal();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
       }
-    }
+    });
+
+    this.cartService.getCart().subscribe();
   }
-  
-  // Método para los botones + y -
-  adjustQuantity(item: CartItem, amount: number): void {
-    const newQuantity = item.quantity + amount;
-    if (newQuantity > 0) {
-      this.cartService.updateQuantity(item.product._id, newQuantity);
+
+  calculateTotal() {
+    this.total = this.cartItems.reduce((acc, item) => {
+      const price = item.product?.price || 0; 
+      return acc + (price * item.quantity);
+    }, 0);
+  }
+
+  updateQuantity(productId: string, quantity: number) {
+    if (quantity < 1) return;
+    this.cartService.updateQuantity(productId, quantity);
+  }
+
+  removeItem(productId: string) {
+    // Usamos confirm nativo o podrías usar un modal de DaisyUI
+    if(confirm('¿Eliminar producto?')) {
+      this.cartService.removeFromCart(productId);
     }
   }
 
-  removeItem(productId: string): void {
-    this.cartService.removeFromCart(productId);
-  }
-
-  // Buena práctica: nos desuscribimos al destruir el componente.
   ngOnDestroy(): void {
-    if (this.cartSubscription) {
-      this.cartSubscription.unsubscribe();
-    }
+    if (this.cartSubscription) this.cartSubscription.unsubscribe();
   }
 }
