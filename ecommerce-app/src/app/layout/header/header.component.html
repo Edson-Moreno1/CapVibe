@@ -1,80 +1,119 @@
-<div class="navbar bg-base-100 sticky top-0 z-50 shadow-md border-b border-base-200">
-  
-  <div class="flex-none">
-    @if (isLoggedIn) {
-      <button class="btn btn-square btn-ghost mr-2" (click)="toggleSidebar()">
-        <i class="bi bi-list text-2xl"></i>
-      </button>
-    }
-    
-    <a routerLink="/" class="btn btn-ghost normal-case text-xl gap-2 px-2">
-      <i class="bi bi-capsule text-primary text-2xl"></i>
-      <span class="font-bold tracking-tight">CapVibe</span>
-    </a>
-  </div>
+<nav class="bg-gray-900 text-white sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      
+      <!-- Logo y Sidebar Toggle -->
+      <div class="flex items-center gap-3">
+        @if (isLoggedIn) {
+          <button class="p-2 hover:bg-gray-800 rounded-lg transition" (click)="toggleSidebar()">
+            <i class="bi bi-list text-2xl"></i>
+          </button>
+        }
+        
+        <a routerLink="/" class="flex items-center gap-2 hover:opacity-80 transition">
+          <i class="bi bi-capsule text-blue-400 text-2xl"></i>
+          <span class="font-bold text-xl">CapVibe</span>
+        </a>
+      </div>
 
-  <div class="flex-1 hidden lg:flex px-4">
-    <ul class="menu menu-horizontal px-1 gap-2 font-medium">
-      <li>
-        <a routerLink="/" routerLinkActive="active text-primary" [routerLinkActiveOptions]="{exact: true}">
+      <!-- Navigation Links -->
+      <div class="hidden lg:flex items-center gap-6 flex-1 px-8">
+        <a routerLink="/" 
+           routerLinkActive="text-blue-400 font-bold" 
+           [routerLinkActiveOptions]="{exact: true}"
+           class="hover:text-blue-400 transition">
           Inicio
         </a>
-      </li>
-      <li>
-        <a routerLink="/products" routerLinkActive="active text-primary">
+        <a routerLink="/products" 
+           routerLinkActive="text-blue-400 font-bold"
+           class="hover:text-blue-400 transition">
           Catálogo
         </a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="flex-none gap-3">
-    
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost btn-circle group">
-        <div class="indicator">
-          <i class="bi bi-cart3 text-2xl group-hover:text-primary transition-colors"></i>
-          @if (cartItemCount > 0) {
-            <span class="badge badge-sm badge-error indicator-item border-white">{{ cartItemCount }}</span>
-          }
-        </div>
       </div>
-      <div tabindex="0" class="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow-xl border border-base-200">
-        <div class="card-body">
-          <span class="text-lg font-bold">{{ cartItemCount }} Items</span>
-          <div class="card-actions">
-            <button routerLink="/cart" class="btn btn-primary btn-block btn-sm">Ver Carrito</button>
+
+      <!-- Cart & User -->
+      <div class="flex items-center gap-4">
+        
+        <!-- Cart -->
+        <div class="relative group">
+          <button class="p-2 hover:bg-gray-800 rounded-full transition relative">
+            <i class="bi bi-cart3 text-2xl"></i>
+            @if (cartItemCount > 0) {
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {{ cartItemCount }}
+              </span>
+            }
+          </button>
+          
+          <!-- Cart Dropdown -->
+          <div class="absolute right-0 mt-2 w-64 bg-white text-gray-900 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div class="p-4">
+              <p class="font-bold text-lg mb-3">{{ cartItemCount }} Items</p>
+              <button routerLink="/cart" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                Ver Carrito
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- User Logged In -->
+        @if (isLoggedIn) {
+          <div class="relative">
+            <button 
+              (click)="toggleDropdown()"
+              class="flex items-center gap-2 p-1 hover:bg-gray-800 rounded-full transition">
+              <div class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                {{ currentUser?.name?.charAt(0)?.toUpperCase() }}
+              </div>
+            </button>
+            
+            <!-- User Dropdown -->
+            @if (dropdownOpen) {
+              <div class="absolute right-0 mt-2 w-56 bg-white text-gray-900 rounded-lg shadow-xl py-2">
+                <div class="px-4 py-3 border-b border-gray-200">
+                  <p class="font-bold">Hola, {{ currentUser?.name }}</p>
+                  <p class="text-sm text-gray-500">{{ currentUser?.email }}</p>
+                </div>
+                
+                <a routerLink="/profile" 
+                   (click)="closeDropdown()"
+                   class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 transition">
+                  <i class="bi bi-person"></i>
+                  <span>Mi Perfil</span>
+                </a>
+                
+                @if (currentUser?.role === 'admin') {
+                  <a routerLink="/admin/dashboard" 
+                     (click)="closeDropdown()"
+                     class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 text-blue-600 font-bold transition">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Admin Panel</span>
+                  </a>
+                }
+                
+                <div class="border-t border-gray-200 my-1"></div>
+                
+                <button 
+                  (click)="logout()"
+                  class="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 transition">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- Login/Register Buttons -->
+          <div class="flex gap-2">
+            <a routerLink="/login" class="px-4 py-2 hover:bg-gray-800 rounded-lg transition">
+              Ingresar
+            </a>
+            <a routerLink="/register" class="px-4 py-2 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition font-semibold">
+              Registrarse
+            </a>
+          </div>
+        }
       </div>
     </div>
-
-    @if (isLoggedIn) {
-      <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder border border-base-300">
-          <div class="bg-neutral text-neutral-content rounded-full w-10">
-            <span class="text-lg font-bold">{{ currentUser?.name?.charAt(0)?.toUpperCase() }}</span>
-          </div>
-        </div>
-        <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow-xl border border-base-200">
-          <li class="menu-title px-4 py-2 border-b border-base-200 mb-2">
-            Hola, {{ currentUser?.name }}
-          </li>
-          <li><a routerLink="/profile"><i class="bi bi-person"></i> Mi Perfil</a></li>
-          
-          @if (currentUser?.role === 'admin') {
-            <li><a routerLink="/admin/dashboard" class="text-primary font-bold"><i class="bi bi-speedometer2"></i> Admin Panel</a></li>
-          }
-          
-          <div class="divider my-1"></div>
-          <li><button (click)="logout()" class="text-error hover:bg-error/10"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button></li>
-        </ul>
-      </div>
-    } @else {
-      <div class="flex gap-2">
-        <a routerLink="/login" class="btn btn-ghost btn-sm">Ingresar</a>
-        <a routerLink="/register" class="btn btn-neutral btn-sm text-white">Registrarse</a>
-      </div>
-    }
   </div>
-</div>
+</nav>

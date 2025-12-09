@@ -18,13 +18,9 @@ export class SidebarComponent implements OnInit {
   currentRole: string = '';
   displayMenu: any[] = [];
 
-  // Menú optimizado: Solo gestión
   menuItems = [
-    // CLIENTE
     { label: 'Mi Perfil', icon: 'bi-person-circle', route: '/profile', roles: ['cliente', 'admin'] },
-    { label: 'Historial de Pedidos', icon: 'bi-bag-check', route: '/profile', roles: ['cliente'] }, // Apunta a profile donde está el historial
-    
-    // ADMIN
+    { label: 'Historial de Pedidos', icon: 'bi-bag-check', route: '/profile', roles: ['cliente'] },
     { label: 'Dashboard', icon: 'bi-grid-1x2-fill', route: '/admin/dashboard', roles: ['admin'] },
     { label: 'Crear Producto', icon: 'bi-plus-square-dotted', route: '/admin/create-product', roles: ['admin'] },
     { label: 'Inventario', icon: 'bi-box-seam', route: '/admin/dashboard', roles: ['admin'] },
