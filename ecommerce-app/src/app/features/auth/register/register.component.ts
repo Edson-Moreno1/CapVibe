@@ -1,60 +1,54 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-
-// Imports de Core
+import { RouterModule, Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  registerForm: FormGroup;
-  isLoading: boolean = false;
-  errorMessage: string = '';
+  registerForm!: FormGroup;
+  loading = false;
+  errorMessage = '';
+  successMessage = '';
+  showPassword = false;
 
-  constructor() {
+  ngOnInit(): void {
     this.registerForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   onSubmit(): void {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
+    if (this.registerForm.valid) {
+      this.loading = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      this.authService.register(this.registerForm.value).subscribe({
+        next: () => {
+          this.loading = false;
+          this.successMessage = '¡Cuenta creada exitosamente! Redirigiendo...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (error) => {
+          this.loading = false;
+          this.errorMessage = error.error?.message || 'Error al crear la cuenta. Intenta nuevamente.';
+        }
+      });
     }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    const userData = this.registerForm.value;
-
-    this.authService.register(userData).subscribe({
-      next: () => {
-        // Éxito: Redirigir al Login para que inicie sesión
-        alert('Cuenta creada con éxito. Por favor inicia sesión.');
-        this.router.navigate(['/login']);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error registro:', err);
-        this.isLoading = false;
-        
-        // Mensaje de error del backend (ej. "El correo ya existe")
-        this.errorMessage = err.error?.message || 'No se pudo crear la cuenta.';
-      }
-    });
   }
 }
