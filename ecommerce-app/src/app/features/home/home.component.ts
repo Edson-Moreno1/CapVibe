@@ -1,11 +1,10 @@
-import { Component, OnInit, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, inject, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../core/models/product.interface';
 import { Category } from '../../core/models/category.interface';
-import { environment } from '../../../environments/environment';
 
 // Importa Swiper
 import { register } from 'swiper/element/bundle';
@@ -19,7 +18,7 @@ register();
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);
   private http = inject(HttpClient);
 
@@ -27,6 +26,10 @@ export class HomeComponent implements OnInit {
   categories: Category[] = [];
   loading = true;
   loadingCategories = true;
+
+  // Para el carrusel manual
+  currentIndex = 0;
+  private intervalId: any;
 
   // Testimonios
   testimonials = [
@@ -53,36 +56,48 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadCategories();
+    this.startAutoSlide();
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   loadProducts(): void {
-    this.loading = true;
-    
-    this.productService.getProducts().subscribe({
-      next: (response) => {
-        const products = response.data || [];
-        
-        // Productos destacados (primeros 8)
-        this.featuredProducts = products.slice(0, 8);
-        
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading products:', error);
-        this.loading = false;
-        
-        // Productos de ejemplo en caso de error (para desarrollo en StackBlitz)
-        this.featuredProducts = [];
+  this.loading = true;
+  
+  this.productService.getProducts().subscribe({
+    next: (response) => {
+      // Maneja diferentes formatos de respuesta
+      let products: Product[] = [];
+      
+      if (Array.isArray(response.data)) {
+        products = response.data;
+      } else if (response.data && Array.isArray(response.data.products)) {
+        products = response.data.products;
+      } else if (Array.isArray(response)) {
+        products = response;
       }
-    });
-  }
-
+      
+      // Productos destacados (primeros 8)
+      this.featuredProducts = products.slice(0, 8);
+      
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading products:', error);
+      this.loading = false;
+      this.featuredProducts = [];
+    }
+  });
+}
   loadCategories(): void {
     this.loadingCategories = true;
     
-    this.http.get<any>(`${environment.apiUrl}/categories`).subscribe({
+    this.http.get<any>('http://localhost:3000/api/categories').subscribe({
       next: (response) => {
-        // La API puede devolver { success: true, data: [...] } o directamente el array
         this.categories = response.data || response || [];
         this.loadingCategories = false;
       },
@@ -90,46 +105,70 @@ export class HomeComponent implements OnInit {
         console.error('Error loading categories:', error);
         this.loadingCategories = false;
         
-        // Fallback: categorías por defecto si falla la API (útil para desarrollo)
+        // Fallback: categorías por defecto
         this.categories = [
-          { 
-            _id: '1', 
-            name: 'Snapback', 
-            description: 'Clásicas y ajustables',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          { 
-            _id: '2', 
-            name: 'Dad Hats', 
-            description: 'Estilo relajado',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          { 
-            _id: '3', 
-            name: 'Trucker', 
-            description: 'Ventiladas y frescas',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          { 
-            _id: '4', 
-            name: 'Fitted', 
-            description: 'Ajuste perfecto',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-        ];
+  { 
+    _id: '1', 
+    name: 'MLB', 
+    description: 'Gorras de las Ligas Mayores de Béisbol',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  { 
+    _id: '2', 
+    name: 'NBA', 
+    description: 'Gorras de la Asociación Nacional de Baloncesto',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  { 
+    _id: '3', 
+    name: 'LMB', 
+    description: 'Gorras de la Liga Mexicana de Béisbol',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  { 
+    _id: '4', 
+    name: 'Liga MX', 
+    description: 'Gorras de la primera división de fútbol mexicano',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
       }
     });
+  }
+
+  // Métodos del carrusel
+  nextSlide(): void {
+    this.currentIndex = (this.currentIndex + 1) % this.featuredProducts.length;
+  }
+
+  prevSlide(): void {
+    this.currentIndex = this.currentIndex === 0 
+      ? this.featuredProducts.length - 1 
+      : this.currentIndex - 1;
+  }
+
+  goToSlide(index: number): void {
+    this.currentIndex = index;
+  }
+
+  startAutoSlide(): void {
+    this.intervalId = setInterval(() => {
+      this.nextSlide();
+    }, 5000); // Cambia cada 5 segundos
   }
 
   getStars(rating: number): number[] {
     return Array(rating).fill(0);
   }
 
-  // Método para obtener imagen de categoría (usa imágenes por defecto)
   getCategoryImage(index: number): string {
     const defaultImages = [
       'assets/img1.png',
@@ -145,7 +184,6 @@ export class HomeComponent implements OnInit {
     return defaultImages[index % defaultImages.length];
   }
 
-  // Método para construir la ruta de filtro por categoría
   getCategoryRoute(categoryName: string): string {
     return `/products?category=${encodeURIComponent(categoryName)}`;
   }

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);   // nuevo
 
   loginForm!: FormGroup;
   loading = false;
@@ -36,7 +37,10 @@ export class LoginComponent implements OnInit {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           this.loading = false;
-          this.router.navigate(['/']);
+
+          // Leer redirectTo si viene en la URL, si no, ir al home o catálogo
+          const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '/products';
+          this.router.navigateByUrl(redirectTo);
         },
         error: (error) => {
           this.loading = false;

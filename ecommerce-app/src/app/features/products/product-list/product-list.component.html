@@ -1,101 +1,211 @@
-<div class="container mx-auto px-4 py-8">
-  
-  <div class="flex justify-between items-end mb-8 border-b border-base-300 pb-4">
-    <div>
-      <h2 class="text-3xl font-bold text-primary">Colección Exclusiva</h2>
-      <p class="text-base-content/70 mt-1">Explora nuestras gorras premium</p>
-    </div>
-    </div>
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <!-- Header del Catálogo -->
+  <div class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Nuestro Catálogo</h1>
+    <p class="text-gray-600">Descubre nuestra colección de productos exclusivos</p>
+  </div>
 
-  <app-loader [isLoading]="isLoading" message="Cargando catálogo..."></app-loader>
+  <!-- Loader -->
+  @if (isLoading) {
+    <app-loader></app-loader>
+  }
 
-  @if (errorMessage) {
-    <div class="alert alert-error shadow-lg max-w-2xl mx-auto">
-      <i class="bi bi-x-octagon"></i>
-      <span>{{ errorMessage }}</span>
+  <!-- Mensaje de Error -->
+  @if (errorMessage && !isLoading) {
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+      <div class="flex">
+        <svg class="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-red-700 font-medium">{{errorMessage}}</p>
+      </div>
     </div>
   }
 
-  @if (!isLoading && !errorMessage) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <!-- Grid de Productos -->
+  @if (!isLoading && products.length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       
       @for (product of products; track product._id) {
-        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
           
-          <figure class="relative h-64 overflow-hidden bg-base-200">
-            <img [src]="product.images[0]" [alt]="product.name" appImgFallback
-                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          <!-- Imagen del Producto (Clickeable) -->
+          <div class="relative cursor-pointer group overflow-hidden" 
+               [routerLink]="['/products', product._id]">
+            <img [src]="product.images?.[0] || '/assets/img1.png'" 
+                 [alt]="product.name"
+                 appImgFallback
+                 class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
             
-            @if (product.stock && product.stock > 0) {
-              <div class="badge badge-secondary absolute top-3 right-3 shadow-md">Nuevo</div>
-            }
-          </figure>
-
-          <div class="card-body p-5">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="card-title text-lg font-bold leading-tight">{{ product.name }}</h3>
-                <p class="text-sm text-base-content/60 uppercase tracking-wide mt-1">{{ product.brand }}</p>
-              </div>
+            <!-- Overlay en Hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+              <span class="text-white text-sm font-semibold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+                👁️ Ver Detalles
+              </span>
             </div>
 
-            <p class="text-sm mt-2 line-clamp-2 text-base-content/80">
-              {{ product.description }}
+            <!-- Badge de Stock -->
+            <div class="absolute top-3 left-3">
+              @if ((product.stock ?? 0) > 0 && (product.stock ?? 0) <= 5) {
+                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                  ¡Solo {{product.stock}}!
+                </span>
+              } @else if ((product.stock ?? 0) > 5) {
+                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                  ✓ Disponible
+                </span>
+              } @else {
+                <span class="bg-gray-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                  Agotado
+                </span>
+              }
+            </div>
+
+            <!-- Badge de Marca (si existe) -->
+            @if (product.brand) {
+              <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-lg">
+                {{product.brand}}
+              </div>
+            }
+          </div>
+
+          <!-- Información del Producto -->
+          <div class="p-5">
+          
+<!-- Categoría -->
+        <p class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-2">
+  @if (isCategoryObject(product.category)) {
+    {{ product.category.name || 'General' }}
+  } @else {
+    {{ product.category || 'General' }}
+  }
+</p>
+
+
+            <!-- Nombre del Producto (Clickeable) -->
+            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer min-h-[3.5rem]"
+                [routerLink]="['/products', product._id]">
+              {{product.name}}
+            </h3>
+
+            <!-- Descripción -->
+            <p class="text-sm text-gray-600 mb-3 line-clamp-2 min-h-[2.5rem]">
+              {{product.description || 'Sin descripción disponible'}}
             </p>
 
-            <div class="divider my-2"></div>
+            <!-- Detalles adicionales (Tamaño, Color) -->
+            <div class="flex gap-2 mb-4 flex-wrap">
+              @if (product.size) {
+                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                  📏 {{product.size}}
+                </span>
+              }
+              @if (product.color) {
+                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                  🎨 {{product.color}}
+                </span>
+              }
+            </div>
 
-            <div class="card-actions justify-between items-center mt-auto">
-              <div class="flex flex-col">
-                <span class="text-2xl font-bold text-primary">${{ product.price }}</span>
-                @if ((product.stock || 0) > 0) {
-                  <span class="text-xs text-success font-semibold">Disponible</span>
-                } @else {
-                  <span class="text-xs text-error font-semibold">Agotado</span>
-                }
+            <!-- Precio -->
+            <div class="mb-4">
+              <div class="flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-gray-900">
+                  ${{product.price | number:'1.2-2'}}
+                </span>
+                <span class="text-sm text-gray-500">MXN</span>
               </div>
+            </div>
+
+            <!-- Botón de Comprar -->
+            <button (click)="addToCart(product)"
+                    [disabled]="(product.stock ?? 0) === 0"
+                    [ngClass]="{
+                      'bg-gray-300 text-gray-500 cursor-not-allowed': (product.stock ?? 0) === 0,
+                      'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0': (product.stock ?? 0) > 0
+                    }"
+                    class="w-full py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2">
               
-              <div class="flex gap-2">
-                <a [routerLink]="['/products', product._id]" class="btn btn-square btn-ghost btn-sm" title="Ver Detalle">
-                  <i class="bi bi-eye"></i>
-                </a>
-                <button class="btn btn-primary btn-sm" 
-                        [disabled]="(product.stock || 0) === 0"
-                        (click)="addToCart(product)">
-                  <i class="bi bi-cart-plus"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      } @empty {
-        <div class="col-span-full text-center py-12">
-          <div class="hero bg-base-200 rounded-box p-10">
-            <div class="hero-content text-center">
-              <div class="max-w-md">
-                <h1 class="text-3xl font-bold text-base-content/50">Sin Resultados</h1>
-                <p class="py-6">No encontramos gorras disponibles por ahora.</p>
-              </div>
-            </div>
+              <!-- Ícono de Carrito -->
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              
+              <span>{{(product.stock ?? 0) === 0 ? 'Agotado' : 'Agregar al Carrito'}}</span>
+            </button>
           </div>
         </div>
       }
     </div>
+  }
 
-    @if (totalPages > 1) {
-      <div class="flex justify-center mt-10">
-        <div class="join shadow-md">
-          <button class="join-item btn" 
-                  [disabled]="currentPage === 1" 
-                  (click)="changePage(currentPage - 1)">«</button>
-          <button class="join-item btn btn-disabled bg-base-100 text-base-content opacity-100">
-            Página {{ currentPage }} de {{ totalPages }}
-          </button>
-          <button class="join-item btn" 
-                  [disabled]="currentPage === totalPages" 
-                  (click)="changePage(currentPage + 1)">»</button>
-        </div>
+  <!-- Mensaje sin productos -->
+  @if (!isLoading && products.length === 0 && !errorMessage) {
+    <div class="text-center py-20">
+      <div class="max-w-md mx-auto">
+        <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+        </svg>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">No hay productos disponibles</h3>
+        <p class="text-gray-600">Vuelve pronto para descubrir nuevos productos</p>
       </div>
-    }
+    </div>
+  }
+
+  <!-- Paginación -->
+  @if (!isLoading && products.length > 0 && totalPages > 1) {
+    <nav class="flex items-center justify-center gap-2 mt-10" aria-label="Paginación">
+      
+      <!-- Botón Anterior -->
+      <button (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              [ngClass]="{
+                'opacity-50 cursor-not-allowed': currentPage === 1,
+                'hover:bg-gray-100': currentPage !== 1
+              }"
+              class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium transition-colors flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Anterior
+      </button>
+
+      <!-- Números de Página -->
+      <div class="hidden sm:flex gap-2">
+        @for (page of getPageNumbers(); track page) {
+          <button (click)="changePage(page)"
+                  [ngClass]="{
+                    'bg-blue-600 text-white': page === currentPage,
+                    'text-gray-700 hover:bg-gray-100': page !== currentPage
+                  }"
+                  class="w-10 h-10 rounded-lg border border-gray-300 font-semibold transition-colors">
+            {{page}}
+          </button>
+        }
+      </div>
+
+      <!-- Indicador Mobile -->
+      <div class="sm:hidden px-4 py-2 bg-gray-100 rounded-lg">
+        <span class="text-sm font-medium text-gray-700">
+          Página {{currentPage}} de {{totalPages}}
+        </span>
+      </div>
+
+      <!-- Botón Siguiente -->
+      <button (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              [ngClass]="{
+                'opacity-50 cursor-not-allowed': currentPage === totalPages,
+                'hover:bg-gray-100': currentPage !== totalPages
+              }"
+              class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium transition-colors flex items-center gap-2">
+        Siguiente
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </nav>
   }
 </div>

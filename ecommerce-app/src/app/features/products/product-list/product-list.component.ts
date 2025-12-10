@@ -1,70 +1,119 @@
-import { Component,OnInit,inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
-//Imports de servicios y modelos
-import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../core/models/product.interface';
-import { ApiResponse } from '../../../core/models/api-response.interface'
-import { CartService } from '../../../core/services/cart.service';
+import { RouterModule, Router } from "@angular/router";
+
+import { ProductService } from "../../../core/services/product.service";
+import { Product } from "../../../core/models/product.interface";
+import { Category } from "../../../core/models/category.interface";
+import { CartService } from "../../../core/services/cart.service";
 import { ImgFallbackDirective } from "../../../shared/directives/img-fallback.directive";
 import { LoaderComponent } from "../../../shared/components/loader/loader.component";
-
+import { AuthService } from "../../../core/services/auth.service";
 
 @Component({
   selector: "app-product-list",
   standalone: true,
-  imports: [CommonModule,LoaderComponent,ImgFallbackDirective, RouterModule],
+  imports: [CommonModule, LoaderComponent, ImgFallbackDirective, RouterModule],
   templateUrl: "./product-list.component.html",
-  styleUrls: ["./product-list.component.css"],  
+  styleUrls: ["./product-list.component.css"],
 })
-
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
   private cartService = inject(CartService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   products: Product[] = [];
-  isLoading: boolean = false;
-  errorMessage:string ='';
+  isLoading = false;
+  errorMessage = "";
 
-  currentPage: number = 1;
-  totalPages: number = 1;
-  itemsPerPage: number = 10;
+  currentPage = 1;
+  totalPages = 1;
+  itemsPerPage = 12;
 
   ngOnInit(): void {
     this.loadProducts();
   }
 
-
   loadProducts(): void {
     this.isLoading = true;
-    this.productService.getProducts(this.currentPage, this.itemsPerPage).subscribe({
-      next:(response:any) =>{
-        this.products = response.products || response.data || [];
-        this.totalPages = response.totalPages || 1;
-        this.isLoading = false;
-        window.scrollTo({top:0, behavior: 'smooth'});
-      },
-      error:(err)=>{
-        console.error('Error cargando productos:', err);
-        this.errorMessage = 'Error al cargar los productos. Intente más tarde.';
-        this.isLoading = false;
-      }
-    });
+    this.errorMessage = "";
+
+    this.productService
+      .getProducts(this.currentPage, this.itemsPerPage)
+      .subscribe({
+        next: (response: any) => {
+          this.products = response.products || response.data || [];
+          this.totalPages = response.totalPages || 1;
+          this.isLoading = false;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        error: (err) => {
+          console.error("Error cargando productos:", err);
+          this.errorMessage =
+            "Error al cargar los productos. Intente más tarde.";
+          this.isLoading = false;
+        },
+      });
   }
 
-    changePage(newPage:number){
-      if(newPage <1 && newPage <= this.totalPages && newPage !== this.currentPage){
-        this.currentPage = newPage;
-        this.loadProducts();
-      }
+  changePage(newPage: number): void {
+    if (
+      newPage >= 1 &&
+      newPage <= this.totalPages &&
+      newPage !== this.currentPage
+    ) {
+      this.currentPage = newPage;
+      this.loadProducts();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const maxVisible = 5;
+    const pages: number[] = [];
+
+    let startPage = Math.max(
+      1,
+      this.currentPage - Math.floor(maxVisible / 2)
+    );
+    let endPage = Math.min(this.totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage < maxVisible - 1) {
+      startPage = Math.max(1, endPage - maxVisible + 1);
     }
 
-  addToCart(product: Product){
-    if(!product._id) return;
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
 
-    this.cartService.addToCart(product._id,1).subscribe({
-      next:()=> console.log(`Producto ${product.name} agregado!`),
-      error:(err)=> console.error('Error al agregar al carrito',err)   
+    return pages;
+  }
+
+  // Type guard para usar en el template
+  isCategoryObject(
+    category: string | Category | undefined
+  ): category is Category {
+    return !!category && typeof category !== "string";
+  }
+
+  addToCart(product: Product): void {
+    if (!product._id || (product.stock ?? 0) === 0) return;
+
+    if (!this.authService.isAuthenticated) {
+      this.router.navigate(["/login"], {
+        queryParams: { redirectTo: `/products/${product._id}` },
+      });
+      return;
+    }
+
+    this.cartService.addToCart(product._id, 1).subscribe({
+      next: () => {
+        console.log(`Producto ${product.name} agregado al carrito`);
+      },
+      error: (err) => {
+        console.error("Error al agregar al carrito", err);
+        alert("Error al agregar el producto. Intenta nuevamente.");
+      },
     });
   }
 }

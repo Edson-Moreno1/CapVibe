@@ -9,8 +9,8 @@ import { Category } from '../models/category.interface';
 })
 export class CategoryService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/categories`;
-
+  //private apiUrl = `${environment.apiUrl}/categories`;
+  private readonly apiUrl = 'http://localhost:3000/api/categories';
   getCategories(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }

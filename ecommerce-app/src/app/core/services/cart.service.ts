@@ -1,67 +1,74 @@
-import { Injectable,inject  } from "@angular/core";
+// src/app/core/services/cart.service.ts
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject,Observable,tap } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
-// Usaremos 'any' en items por ahora hasta que definamos la interfaz CartItem estricta
-// para no bloquearte.
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
-
 export class CartService {
-    private http= inject(HttpClient);
-    //private apiUrl = `${(environment as any).BACK_URL}/cart`;
-    private readonly apiUrl = 'http://localhost:3000/api/cart';
+  private http = inject(HttpClient);
 
-    private _cart = new BehaviorSubject<any[]>([]);
-    public cart$ = this._cart.asObservable();
+  private readonly baseUrl = `${environment.BACK_URL}/cart`;
 
-    constructor(){
-        this.loadCartInitial();
-    }
+  private _cart = new BehaviorSubject<any[]>([]);
+  public cart$ = this._cart.asObservable();
 
-    getCart(): Observable<any>{
-        return this.http.get<any>(this.apiUrl).pipe(
-            tap(response =>{
-                const items = response.items || [];
-                this._cart.next(items);
-            })
-        );
-    }
+  constructor() {
+    this.loadCartInitial();
+  }
 
-    addToCart(productId: string, quantity: number =1): Observable<any>{
-        return this.http.post<any>(this.apiUrl,{productId, quantity}).pipe(
-            tap(()=>{
-                this.getCart().subscribe();
-            })
-        );
-    }
+  getCart(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/`).pipe(
+      tap(response => {
+        const items = response.items || [];
+        this._cart.next(items);
+      })
+    );
+  }
 
-    private loadCartInitial(){
+  addToCart(productId: string, quantity: number = 1): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/add`, { productId, quantity }).pipe(
+      tap(() => {
+        this.getCart().subscribe();
+      })
+    );
+  }
 
-    }
+  private loadCartInitial(): void {
+    // Opcional: cargar carrito al iniciar
+    // this.getCart().subscribe();
+  }
 
-    getTotal(): number{
-        return this._cart.value.reduce((total,item)=>{
-            return total + (item.product?.price || 0)*item.quantity;
-        },0);
-    }
+  getTotal(): number {
+    return this._cart.value.reduce((total, item) => {
+      return total + (item.product?.price || 0) * item.quantity;
+    }, 0);
+  }
 
-    removeFromCart(productId: string):void{
-        this.http.delete<any>(`${this.apiUrl}/${productId}`).pipe(
-            tap(()=>{
-                this.getCart().subscribe();
-            })
-        ).subscribe();
-    }
+  removeFromCart(productId: string): void {
+    this.http.delete<any>(`${this.baseUrl}/remove/${productId}`).pipe(
+      tap(() => {
+        this.getCart().subscribe();
+      })
+    ).subscribe();
+  }
 
-    updateQuantity(productId: string, quantity: number): void{
-        if (quantity <1) return;
-        this.http.put(this.apiUrl,{productId,quantity}).pipe(
-            tap(()=>{
-                this.getCart().subscribe();
-            })
-        ).subscribe();
-    }
+  updateQuantity(productId: string, quantity: number): void {
+    if (quantity < 1) return;
+    this.http.put(`${this.baseUrl}/update/${productId}`, { quantity }).pipe(
+      tap(() => {
+        this.getCart().subscribe();
+      })
+    ).subscribe();
+  }
+
+  clearCart(): void {
+    this.http.delete<any>(`${this.baseUrl}/clear`).pipe(
+      tap(() => {
+        this.getCart().subscribe();
+      })
+    ).subscribe();
+  }
 }
