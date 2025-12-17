@@ -111,7 +111,7 @@
                 [routerLink]="['/products', product._id]"
               >
                 <img
-                  [src]="product.images?.[0] || '/assets/img1.png'"
+                  [src]="product.images[0] || '/assets/img1.png'"
                   [alt]="product.name"
                   appImgFallback
                   class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
