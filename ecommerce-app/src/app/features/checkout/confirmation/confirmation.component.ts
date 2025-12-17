@@ -1,42 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
-import { OrderData } from '../../Models/orderdata';
-
-
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-confirmation',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './confirmation.component.html',
-  styleUrl: './confirmation.component.css'
+  styleUrls: ['./confirmation.component.css']
 })
-export class ConfirmationComponent implements OnInit{
- order: OrderData | null = null;
+export class ConfirmationComponent implements OnInit {
+  private router = inject(Router);
 
-  constructor(private router: Router) {}
-  
+  order: any = null;
 
+  ngOnInit(): void {
+    // Intentar leer la orden desde el state de la navegación
+    const nav = this.router.getCurrentNavigation();
+    this.order = nav?.extras?.state?.['order'] || history.state?.order || null;
 
-  ngOnInit(): void{
-    const orderDataStr = localStorage.getItem('orderData');
-    if (orderDataStr) {
-      this.order = JSON.parse(orderDataStr);
-    }else{
-      this.router.navigate(['/products']);
-    }
+    // Opcional: si no hay order, podrías redirigir al home o a /orders
+    // if (!this.order) {
+    //   this.router.navigate(['/']);
+    // }
   }
 
-formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-MX',{
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  goToHome(): void {
+    this.router.navigate(['/']);
+  }
 
-  });
-
+  goToOrders(): void {
+    this.router.navigate(['/profile']); // o '/orders' si tienes una sección de pedidos
+  }
 }
-}//end

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { exitGuard } from './core/guards/exit.guard';
-// import { adminGuard } from './core/guards/admin.guard'; // Descomentar en Fase 5
+import { adminGuard } from './core/guards/admin.guard'; // Descomentar en Fase 5
 
 export const routes: Routes = [
   // --- RUTAS PÚBLICAS ---
@@ -34,6 +34,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cart/cart-page/cart.component').then(m => m.CartComponent)
   },
   {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
     path: 'checkout',
     canActivate: [authGuard], 
     canDeactivate: [exitGuard], 
@@ -45,14 +50,33 @@ export const routes: Routes = [
     loadComponent: () => import('./features/checkout/confirmation/confirmation.component').then(m => m.ConfirmationComponent)
   },
 
-  // --- RUTAS DE ADMIN (FASE 5) ---
-  /*
+  
+  
   {
     path: 'admin',
-    canActivate: [adminGuard],
-    loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    canActivate: [adminGuard,authGuard],
+    children:[
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path:'dashboard',
+        loadComponent:() => import('./features/admin/dashboard/dashboard.component').then(m=>m.DashboardComponent)
+      },
+      {
+        path:'create-product',
+        loadComponent: ()=> import('./features/admin/product-form/product-form.component').then(m=>m.ProductFormComponent)
+      },
+      {
+        path:'edit-product/:id',
+        loadComponent:() =>import('./features/admin/product-form/product-form.component').then(m=>m.ProductFormComponent)
+      }
+    ],
+
   },
-  */
+  
 
   {
     path: '**',

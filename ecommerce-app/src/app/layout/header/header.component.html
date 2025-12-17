@@ -1,32 +1,206 @@
-<header class="bg-white shadow-md sticky top-0 z-40">
-  <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-4">
-    <a routerLink="/" class="text-2xl font-bold text-indigo-600">
-      CapVibe
-    </a>
-
-    <div class="hidden md:flex items-center space-x-6 flex-grow justify-center">
-      <a routerLink="/" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors" routerLinkActive="text-indigo-600 font-semibold" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/products" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors" routerLinkActive="text-indigo-600 font-semibold">Productos</a>
+<nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-sm text-white shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      
+      <!-- Logo y Sidebar Toggle -->
+      <div class="flex items-center gap-3">
+        @if (isLoggedIn) {
+          <button
+            class="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            (click)="toggleSidebar()"
+          >
+            <!-- Icono menú (hamburguesa) -->
+            <span class="block w-6 h-0.5 bg-white mb-1 rounded"></span>
+            <span class="block w-6 h-0.5 bg-white mb-1 rounded"></span>
+            <span class="block w-6 h-0.5 bg-white rounded"></span>
+          </button>
+        }
+        
+        <a
+          routerLink="/"
+          class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <!-- Icono logo: gorra simple -->
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-500">
+            <span class="text-lg">🧢</span>
+          </span>
+          <span class="font-bold text-xl tracking-tight">CapVibe</span>
+        </a>
       </div>
 
-    <div class="flex items-center space-x-4">
+      <!-- Navigation Links -->
+      <div class="hidden lg:flex items-center gap-6 flex-1 px-8">
+        <a
+          routerLink="/"
+          routerLinkActive="text-blue-400 font-semibold"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-sm uppercase tracking-wide text-gray-300 hover:text-blue-400 transition-colors"
+        >
+          Inicio
+        </a>
+        <a
+          routerLink="/products"
+          routerLinkActive="text-blue-400 font-semibold"
+          class="text-sm uppercase tracking-wide text-gray-300 hover:text-blue-400 transition-colors"
+        >
+          Catálogo
+        </a>
+      </div>
 
-      @if (isLoggedIn) {
-        <a routerLink="/profile" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Perfil</a>
-        <button (click)="logout()" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Logout</button>
-      } @else {
-        <a routerLink="/login" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Login</a>
-        <a routerLink="/register" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Registro</a>
-      }
+      <!-- Cart & User -->
+      <div class="flex items-center gap-4">
+        
+        <!-- Cart -->
+        <div class="relative">
+          <button
+            class="p-2 hover:bg-gray-800 rounded-full transition-colors relative"
+            routerLink="/cart"
+          >
+            <!-- Icono carrito (SVG) -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="9" cy="21" r="1.5" />
+              <circle cx="18" cy="21" r="1.5" />
+              <path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 8H7" />
+            </svg>
 
-      <a routerLink="/cart" class="relative text-gray-600 hover:text-indigo-600 transition-colors">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-        @if (cartItemCount > 0) {
-          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {{ cartItemCount }}
-          </span>
+            @if (cartItemCount > 0) {
+              <span
+                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+              >
+                {{ cartItemCount }}
+              </span>
+            }
+          </button>
+        </div>
+
+        <!-- User Logged In -->
+        @if (isLoggedIn) {
+          <div class="relative">
+            <button 
+              (click)="toggleDropdown()"
+              class="flex items-center gap-2 p-1 hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <div
+                class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm uppercase"
+              >
+                {{ currentUser?.name?.charAt(0)?.toUpperCase() }}
+              </div>
+            </button>
+            
+            @if (dropdownOpen) {
+              <div
+                class="absolute right-0 mt-2 w-64 bg-white text-gray-900 rounded-lg shadow-xl py-2 border border-gray-100"
+              >
+                <div class="px-4 py-3 border-b border-gray-200">
+                  <p class="font-semibold text-sm leading-tight">
+                    Hola, {{ currentUser?.name }}
+                  </p>
+                  <p class="text-xs text-gray-500 truncate">
+                    {{ currentUser?.email }}
+                  </p>
+                </div>
+                
+                <a
+                  routerLink="/profile"
+                  (click)="closeDropdown()"
+                  class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-sm transition-colors"
+                >
+                  <!-- Icono perfil (SVG) -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-gray-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c1.5-3 4.5-5 8-5s6.5 2 8 5" />
+                  </svg>
+                  <span>Mi Perfil</span>
+                </a>
+                
+                @if (currentUser?.role === 'admin') {
+                  <a
+                    routerLink="/admin/dashboard"
+                    (click)="closeDropdown()"
+                    class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 text-blue-600 font-semibold text-sm transition-colors"
+                  >
+                    <!-- Icono dashboard (SVG) -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="3" width="7" height="9" rx="1" />
+                      <rect x="14" y="3" width="7" height="5" rx="1" />
+                      <rect x="14" y="11" width="7" height="10" rx="1" />
+                      <rect x="3" y="15" width="7" height="6" rx="1" />
+                    </svg>
+                    <span>Admin Panel</span>
+                  </a>
+                }
+                
+                <div class="border-t border-gray-200 my-1"></div>
+                
+                <button 
+                  (click)="logout()"
+                  class="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 text-sm transition-colors"
+                >
+                  <!-- Icono logout (SVG) -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- Login/Register Buttons -->
+          <div class="flex gap-2">
+            <a
+              routerLink="/login"
+              class="px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              Ingresar
+            </a>
+            <a
+              routerLink="/register"
+              class="px-4 py-2 text-sm font-semibold bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Registrarse
+            </a>
+          </div>
         }
-      </a>
+      </div>
     </div>
-  </nav>
-</header>
+  </div>
+</nav>

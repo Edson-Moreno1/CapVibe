@@ -1,61 +1,52 @@
-import { Component, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import{
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import { Router,RouterLink } from "@angular/router";
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,RouterLink],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private authService = inject(AuthService)
+  private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);   // nuevo
 
-  errorMessage: string ='';
-  isLoading: boolean = false;
+  loginForm!: FormGroup;
+  loading = false;
+  errorMessage = '';
+  showPassword = false;
 
-  loginForm: FormGroup = this.fb.group({
-    email: ['',[Validators.required, Validators.email]],
-    password: ['',[Validators.required, Validators.minLength(6)]]
-  });
-
-  onSubmit(): void{
-    if (this.loginForm.invalid){
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    const credentials = this.loginForm.value;
-
-    this.authService.login(credentials).subscribe({
-      next:(user) => {
-        console.log('Login exitoso:', user);
-        this.isLoading = false;
-        this.router.navigate(['/']);
-      },
-      error:(err)=>{
-        console.error('Error en el login:', err);
-
-        if(err.status === 401 || err.status === 400){
-          this.errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
-        } else {
-          this.errorMessage = 'Ocurrió un error en el servidor. Intenta más tarde.';
-        }
-      }
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.valid) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.authService.login(this.loginForm.value).subscribe({
+        next: () => {
+          this.loading = false;
+
+          // Leer redirectTo si viene en la URL, si no, ir al home o catálogo
+          const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '/products';
+          this.router.navigateByUrl(redirectTo);
+        },
+        error: (error) => {
+          this.loading = false;
+          this.errorMessage = error.error?.message || 'Error al iniciar sesión. Verifica tus credenciales.';
+        }
+      });
+    }
   }
 }

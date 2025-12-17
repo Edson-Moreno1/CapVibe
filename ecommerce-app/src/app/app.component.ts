@@ -1,17 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MainComponent } from "./main/main.component";
-import { FooterComponent } from './layout/footer/footer.component';
 import { HeaderComponent } from './layout/header/header.component';
-
-
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { FooterComponent } from './layout/footer/footer.component';
+import { LayoutService } from './core/services/layout.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FooterComponent, HeaderComponent],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent,
+    SidebarComponent,
+    FooterComponent
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'ecommerce';
+export class AppComponent implements OnInit {
+  // Inyecta los servicios correctamente
+  private authService = inject(AuthService);
+  private layoutService = inject(LayoutService);
+
+  // Propiedades públicas para el template
+  isSidebarVisible$ = this.layoutService.isSidebarVisible$;
+  isLoggedIn = false;
+
+  ngOnInit(): void {
+    // Suscríbete al estado de autenticación
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      
+      // Cierra el sidebar si el usuario no está logueado
+      if (!user) {
+        this.layoutService.closeSidebar();
+      }
+    });
+  }
 }

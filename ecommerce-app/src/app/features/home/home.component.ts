@@ -1,78 +1,157 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { ProductService } from '../../services/product.service';
-import { Product } from '../../Models/products';
-import { interval, Subject, takeUntil } from 'rxjs';
+import { RouterModule, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+
+import { ProductService } from '../../core/services/product.service';
+import { Product } from '../../core/models/product.interface';
+import { Category } from '../../core/models/category.interface';
+import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
+
+// Swiper
+import { register } from 'swiper/element/bundle';
+register();
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  featuredProducts: Product[] = [];
-  currentIndex = 0;
-  autoPlayInterval = 5000; // 5 segundos
-  isAutoPlaying = true;
-  
-  private destroy$ = new Subject<void>();
+  private productService = inject(ProductService);
+  private http = inject(HttpClient);
+  private cartService = inject(CartService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private productService: ProductService) {}
+  featuredProducts: Product[] = [];
+  categories: Category[] = [];
+  loading = true;
+  loadingCategories = true;
+
+  currentIndex = 0;
+  private intervalId: any;
+
+  testimonials = [
+    { name: 'Carlos Rodríguez', rating: 5, comment: 'Excelente calidad, las gorras llegan en perfectas condiciones. Totalmente recomendado.', avatar: 'C' },
+    { name: 'María González', rating: 5, comment: 'Gran variedad de diseños. El envío fue rápido y el empaque impecable.', avatar: 'M' },
+    { name: 'Luis Martínez', rating: 4, comment: 'Buena experiencia de compra. Las gorras son auténticas y de alta calidad.', avatar: 'L' }
+  ];
 
   ngOnInit(): void {
     this.loadProducts();
-    this.startAutoPlay();
+    this.loadCategories();
+    this.startAutoSlide();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   loadProducts(): void {
-    this.productService.getProducts(1).subscribe({
+    this.loading = true;
+
+    this.productService.getProducts(1, 8, { isFeatured: true }).subscribe({
       next: (response) => {
-        const sortedProducts = response.products.sort((a, b) => a.price - b.price);
-        this.featuredProducts = sortedProducts.slice(0, 10);
+        let products: Product[] = [];
+
+        if (Array.isArray(response.products)) {
+          products = response.products;
+        } else if (Array.isArray(response.data)) {
+          products = response.data;
+        } else if (Array.isArray(response)) {
+          products = response;
+        }
+
+        this.featuredProducts = products;
+        this.loading = false;
       },
-      error: (err) => {
-        console.log('Error al cargar los productos destacados:', err);
+      error: (error) => {
+        console.error('Error loading featured products:', error);
+        this.loading = false;
+        this.featuredProducts = [];
       }
     });
   }
 
-  prevSlide(): void {
-    this.resetAutoPlay();
-    const isFirstSlide = this.currentIndex === 0;
-    this.currentIndex = isFirstSlide ? this.featuredProducts.length - 1 : this.currentIndex - 1;
+  loadCategories(): void {
+    this.loadingCategories = true;
+
+    this.http.get<any>(`${environment.BACK_URL}/categories`).subscribe({
+      next: (response) => {
+        this.categories = response.data || response || [];
+        this.loadingCategories = false;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.loadingCategories = false;
+        // opcional: puedes dejar categories con fallback
+      }
+    });
   }
 
   nextSlide(): void {
-    this.resetAutoPlay();
-    const isLastSlide = this.currentIndex === this.featuredProducts.length - 1;
-    this.currentIndex = isLastSlide ? 0 : this.currentIndex + 1;
+    if (!this.featuredProducts.length) return;
+    this.currentIndex = (this.currentIndex + 1) % this.featuredProducts.length;
+  }
+
+  prevSlide(): void {
+    if (!this.featuredProducts.length) return;
+    this.currentIndex =
+      this.currentIndex === 0
+        ? this.featuredProducts.length - 1
+        : this.currentIndex - 1;
   }
 
   goToSlide(index: number): void {
     this.currentIndex = index;
-    this.resetAutoPlay();
   }
 
-  private startAutoPlay(): void {
-    if (!this.isAutoPlaying || this.featuredProducts.length <= 1) return;
+  startAutoSlide(): void {
+    this.intervalId = setInterval(() => {
+      this.nextSlide();
+    }, 5000);
+  }
 
-    interval(this.autoPlayInterval)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.nextSlide();
+  getStars(rating: number): number[] {
+    return Array(rating).fill(0);
+  }
+
+  getCategoryImage(index: number): string {
+    const defaultImages = [
+      'assets/categories/mlb.webp',
+      'assets/categories/nba.webp',
+      'assets/categories/f1.webp',
+      'assets/categories/ligamx.webp'
+    ];
+    return defaultImages[index % defaultImages.length];
+  }
+
+  addToCartFromHome(product: Product): void {
+    if (!product._id || (product.stock ?? 0) === 0) return;
+
+    if (!this.authService.isAuthenticated) {
+      this.router.navigate(['/login'], {
+        queryParams: { redirectTo: `/products/${product._id}` }
       });
-  }
+      return;
+    }
 
-  private resetAutoPlay(): void {
-    // Podrías agregar lógica para resetear el autoplay aquí si lo deseas
-    // Por ahora solo evitamos errores
+    this.cartService.addToCart(product._id, 1).subscribe({
+      next: () => {
+        console.log(`Producto ${product.name} agregado al carrito desde home`);
+      },
+      error: (err) => {
+        console.error('Error al agregar al carrito', err);
+        alert('Error al agregar el producto. Intenta nuevamente.');
+      }
+    });
   }
 }

@@ -1,0 +1,123 @@
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+  
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-3xl font-bold">
+      {{ isEditMode ? 'Editar Producto' : 'Crear Producto' }}
+    </h2>
+    <a routerLink="/admin/dashboard" class="btn btn-ghost gap-2">
+      <i class="bi bi-arrow-left"></i> Cancelar
+    </a>
+  </div>
+
+  <app-loader [isLoading]="isLoading" message="Guardando cambios..."></app-loader>
+
+  @if (errorMessage) {
+    <div class="alert alert-error mb-6 shadow-lg">
+      <i class="bi bi-x-circle"></i> {{ errorMessage }}
+    </div>
+  }
+
+  @if (!isLoading) {
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <div class="lg:col-span-2 space-y-6">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title text-primary mb-4">Información General</h3>
+            
+            <div class="form-control w-full">
+              <label class="label"><span class="label-text font-bold">Nombre del Producto</span></label>
+              <input type="text" formControlName="name" placeholder="Ej. Gorra NY Yankees" 
+                     class="input input-bordered w-full"
+                     [class.input-error]="productForm.get('name')?.invalid && productForm.get('name')?.touched" />
+              @if (productForm.get('name')?.invalid && productForm.get('name')?.touched) {
+                <label class="label"><span class="label-text-alt text-error">Nombre requerido</span></label>
+              }
+            </div>
+
+            <div class="form-control w-full">
+              <label class="label"><span class="label-text font-bold">Descripción</span></label>
+              <textarea formControlName="description" class="textarea textarea-bordered h-32" placeholder="Detalles del producto..."
+                        [class.textarea-error]="productForm.get('description')?.invalid && productForm.get('description')?.touched"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label"><span class="label-text">Marca</span></label>
+                <input type="text" formControlName="brand" class="input input-bordered" />
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text">Color</span></label>
+                <input type="text" formControlName="color" class="input input-bordered" />
+              </div>
+            </div>
+
+            <div class="form-control w-full mt-2">
+              <label class="label"><span class="label-text font-bold">ID de Categoría</span></label>
+              <div class="join w-full">
+                <input type="text" formControlName="category" placeholder="Pegar ID de Mongo" class="input input-bordered join-item w-full font-mono text-sm" />
+                <button type="button" class="btn btn-square join-item" title="Info"><i class="bi bi-info-circle"></i></button>
+              </div>
+              <label class="label"><span class="label-text-alt opacity-60">Copia el ID desde tu base de datos</span></label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title text-primary mb-4">Inventario</h3>
+            
+            <div class="form-control">
+              <label class="label cursor-pointer">
+                <span class="label-text font-bold">Producto Activo</span> 
+                <input type="checkbox" formControlName="isActive" class="toggle toggle-success" />
+              </label>
+            </div>
+
+            <div class="divider my-2"></div>
+
+            <div class="form-control">
+              <label class="label"><span class="label-text font-bold">Precio ($)</span></label>
+              <input type="number" formControlName="price" class="input input-bordered font-mono text-lg" />
+            </div>
+
+            <div class="form-control mt-2">
+              <label class="label"><span class="label-text font-bold">Stock (Unidades)</span></label>
+              <input type="number" formControlName="stock" class="input input-bordered" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title text-primary mb-2">Multimedia</h3>
+            
+            <div class="form-control">
+              <label class="label"><span class="label-text">URL de Imagen</span></label>
+              <input type="text" formControlName="images" placeholder="https://... o assets/img1.png" class="input input-bordered text-sm" />
+            </div>
+
+            <div class="mt-4 bg-base-200 rounded-box p-4 flex justify-center items-center h-48 border border-dashed border-base-content/20">
+              @if (productForm.get('images')?.value) {
+                <img [src]="productForm.get('images')?.value" appImgFallback alt="Preview" class="max-h-full max-w-full object-contain rounded shadow-sm" />
+              } @else {
+                <span class="text-sm opacity-50">Sin vista previa</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full btn-lg shadow-lg" [disabled]="productForm.invalid || isLoading">
+          <i class="bi" [class.bi-save]="isEditMode" [class.bi-plus-lg]="!isEditMode"></i>
+          {{ isEditMode ? 'Guardar Cambios' : 'Publicar Producto' }}
+        </button>
+
+      </div>
+
+    </form>
+  }
+</div>

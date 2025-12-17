@@ -8,13 +8,20 @@ export const getAllProducts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const products = await Product.find({ isActive: true })
+    // Filtros dinámicos
+    const filters = { isActive: true };
+
+    if (req.query.isFeatured === 'true') {
+      filters.isFeatured = true;
+    }
+
+    const products = await Product.find(filters)
       .populate('category', 'name')
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1,_id:1 });
+      .sort({ createdAt: -1, _id: 1 });
 
-    const total = await Product.countDocuments({ isActive: true });
+    const total = await Product.countDocuments(filters);
 
     res.json({
       products,
@@ -26,6 +33,7 @@ export const getAllProducts = async (req, res) => {
     res.status(500).json({ message: 'Error del servidor', error: error.message });
   }
 };
+
 
 export const getProductById = async (req, res) => {
   try {

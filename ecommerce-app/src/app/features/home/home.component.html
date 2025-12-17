@@ -1,107 +1,277 @@
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-  <!-- Header con efecto -->
-  <div class="text-center mb-12">
-    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Productos Destacados</h2>
-    <div class="h-1 w-20 bg-gradient-to-r from-yellow-400 to-yellow-600 mx-auto rounded-full"></div>
-  </div>
+<div class="bg-white">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black opacity-40"></div>
+    <div
+      class="absolute inset-0 bg-cover bg-center"
+      style="background-image: url('assets/60772224_59FIFTY_HYPERFLY595027815_LOSDOD_OTC_3QR_1296x.webp'); mix-blend-mode: overlay;"
+    ></div>
 
-  <!-- Carrusel Principal -->
-  <div class="relative w-full max-w-4xl mx-auto">
-    <!-- Contenedor principal con efecto de sombra dinámica -->
-    <div class="relative h-96 md:h-[500px] overflow-hidden rounded-2xl shadow-2xl group">
-      <!-- Fondo gradiente dinámico -->
-      <div class="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-50"></div>
-
-      <!-- Imágenes con transición suave -->
-      @for (product of featuredProducts; track product._id; let i = $index) {
-        <div 
-          [class]="currentIndex === i ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'" 
-          class="absolute inset-0 transition-all duration-700 ease-in-out">
-          <a [routerLink]="['/products', product._id]" class="block w-full h-full">
-            <img 
-              [src]="product.images[0]" 
-              class="w-full h-full object-contain p-6 md:p-8" 
-              alt="{{ product.name }}"
-              loading="lazy">
+    <div class="relative container mx-auto px-4 py-24 lg:py-32">
+      <div class="max-w-3xl">
+        <h1 class="text-5xl lg:text-7xl font-extrabold mb-6 leading-tight">
+          Encuentra tu estilo,
+          <span class="text-blue-400">usa tu gorra</span>
+        </h1>
+        <p class="text-xl lg:text-2xl mb-8 text-gray-200">
+          Colección exclusiva de gorras premium para todos los gustos
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a
+            routerLink="/products"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 shadow-lg"
+          >
+            Ver catálogo
+          </a>
+          <a
+            routerLink="/products"
+            class="bg-white hover:bg-gray-100 text-gray-900 font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 shadow-lg"
+          >
+            Novedades
           </a>
         </div>
-      }
-
-      <!-- Overlay de degradado inferior -->
-      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-
-      <!-- Botones de navegación mejorados -->
-      <button 
-        (click)="prevSlide()" 
-        type="button" 
-        class="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 group-hover:bg-yellow-400 group-hover:text-white">
-        <svg class="w-6 h-6 text-gray-800 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-
-      <button 
-        (click)="nextSlide()" 
-        type="button" 
-        class="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 hover:bg-white shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 group-hover:bg-yellow-400 group-hover:text-white">
-        <svg class="w-6 h-6 text-gray-800 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </button>
+      </div>
     </div>
 
-    <!-- Indicadores con información del producto -->
-    <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-6">
-      <!-- Información del producto actual -->
-      <div class="flex-1 text-center md:text-left">
-        @if (featuredProducts[currentIndex]) {
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ featuredProducts[currentIndex].name }}</h3>
-          <p class="text-lg text-yellow-600 font-semibold mb-2">{{ featuredProducts[currentIndex].price | currency }}</p>
-          @if (featuredProducts[currentIndex].description) {
-            <p class="text-sm text-gray-600 line-clamp-2">{{ featuredProducts[currentIndex].description }}</p>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <span
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/60 text-white text-2xl"
+      >
+        ↓
+      </span>
+    </div>
+  </section>
+
+  <!-- Categorías -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Explora por categoría</h2>
+        <p class="text-gray-600 text-lg">Encuentra el estilo perfecto para ti</p>
+      </div>
+
+      @if (loadingCategories) {
+        <div class="flex justify-center items-center py-20">
+          <div
+            class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"
+          ></div>
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          @for (category of categories; track category._id; let i = $index) {
+            <a
+              [routerLink]="['/products']"
+              [queryParams]="{ category: category.name }"
+              class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+            >
+              <div class="aspect-square relative">
+                <img
+                  [src]="getCategoryImage(i)"
+                  [alt]="category.name"
+                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 class="text-2xl font-bold mb-1">
+                    {{ category.name }}
+                  </h3>
+                  <p class="text-sm text-gray-200">
+                    {{ category.description || 'Ver productos' }}
+                  </p>
+                </div>
+              </div>
+            </a>
           }
-          <a [routerLink]="['/products', featuredProducts[currentIndex]._id]" class="inline-block mt-4 px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors">
-            Ver Detalles
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Productos destacados con Swiper -->
+  <section class="py-16">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <h2 class="text-4xl font-bold text-gray-900 mb-2">Productos destacados</h2>
+          <p class="text-gray-600">Las gorras más populares de la semana</p>
+        </div>
+        <a
+          routerLink="/products"
+          class="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-2"
+        >
+          Ver todo
+          <span class="text-lg">→</span>
+        </a>
+      </div>
+
+      @if (loading) {
+        <div class="flex justify-center items-center py-20">
+          <div
+            class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"
+          ></div>
+        </div>
+      } @else if (featuredProducts.length === 0) {
+        <div class="text-center py-20">
+          <div
+            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+          >
+            <span class="text-3xl text-gray-400">∅</span>
+          </div>
+          <p class="text-gray-600 text-lg">No hay productos destacados por ahora</p>
+        </div>
+      } @else {
+        <swiper-container
+          slides-per-view="1"
+          space-between="20"
+          loop="true"
+          autoplay-delay="3000"
+          navigation="true"
+          pagination="true"
+          breakpoints='{"640": {"slidesPerView": 2}, "768": {"slidesPerView": 3}, "1024": {"slidesPerView": 4}}'
+        >
+          @for (product of featuredProducts; track product._id) {
+            <swiper-slide>
+              <div
+                class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer h-full"
+              >
+                <div class="relative aspect-square overflow-hidden bg-gray-100">
+                  <img
+                    [src]="product.images && product.images.length > 0 ? product.images[0] : 'assets/img1.png'"
+                    [alt]="product.name"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  >
+                  @if (product.stock !== undefined && product.stock < 5) {
+                    <span
+                      class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full"
+                    >
+                      ¡Últimas unidades!
+                    </span>
+                  }
+
+                  <div
+                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center"
+                  >
+                    <a
+                      [routerLink]="['/products', product._id]"
+                      class="bg-white text-gray-900 px-6 py-3 rounded-lg font-bold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
+                    >
+                      Ver detalles
+                    </a>
+                  </div>
+                </div>
+
+                <div class="p-4 flex flex-col h-full">
+                  <h3 class="font-bold text-gray-900 mb-2 truncate">
+                    {{ product.name }}
+                  </h3>
+                  <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                    {{ product.description }}
+                  </p>
+                  <div class="mt-auto flex items-center justify-between">
+                    <span class="text-2xl font-bold text-blue-600">
+                      ${{ product.price }}
+                    </span>
+                    <button
+                      type="button"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition"
+                      (click)="addToCartFromHome(product)"
+                    >
+                      Añadir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </swiper-slide>
+          }
+        </swiper-container>
+      }
+    </div>
+  </section>
+
+  <!-- Banner promocional -->
+  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div class="text-center lg:text-left">
+          <h2 class="text-4xl lg:text-5xl font-bold mb-4">¡Envío gratis!</h2>
+          <p class="text-xl mb-6">En compras mayores a $50 USD</p>
+          <a
+            routerLink="/products"
+            class="inline-block bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition transform hover:scale-105"
+          >
+            Comprar ahora
           </a>
-        }
-      </div>
-
-      <!-- Indicadores de puntos -->
-      <div class="flex gap-3 items-center justify-center flex-wrap">
-        @for (product of featuredProducts; track product._id; let i = $index) {
-          <button
-            (click)="goToSlide(i)"
-            [attr.aria-label]="'Go to slide ' + (i + 1)"
-            [class]="currentIndex === i ? 'bg-yellow-500 w-10' : 'bg-gray-300 w-3 hover:bg-gray-400'"
-            class="h-3 rounded-full transition-all duration-500 ease-out">
-            <span class="sr-only">Slide {{ i + 1 }}</span>
-          </button>
-        }
+        </div>
+        <div class="text-6xl lg:text-8xl">
+          🚚
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Contador de slides -->
-    <div class="text-center mt-4 text-sm text-gray-500 font-medium">
-      {{ currentIndex + 1 }} / {{ featuredProducts.length }}
-    </div>
-  </div>
+  <!-- Testimonios -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">
+          Lo que dicen nuestros clientes
+        </h2>
+      </div>
 
-  <!-- Sección adicional: Características destacadas -->
-  <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all hover:scale-105">
-      <div class="text-4xl mb-3">⚡</div>
-      <h4 class="font-semibold text-gray-900 text-lg">Envío Rápido</h4>
-      <p class="text-sm text-gray-700 mt-2">Entregas en 24-48 horas</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        @for (testimonial of testimonials; track testimonial.name) {
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl"
+              >
+                {{ testimonial.avatar }}
+              </div>
+              <div>
+                <h4 class="font-bold text-gray-900">
+                  {{ testimonial.name }}
+                </h4>
+                <div class="flex gap-1 text-yellow-400">
+                  @for (star of getStars(testimonial.rating); track $index) {
+                    <span class="text-sm">★</span>
+                  }
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 italic">
+              "{{ testimonial.comment }}"
+            </p>
+          </div>
+        }
+      </div>
     </div>
-    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all hover:scale-105">
-      <div class="text-4xl mb-3">✓</div>
-      <h4 class="font-semibold text-gray-900 text-lg">100% Auténtico</h4>
-      <p class="text-sm text-gray-700 mt-2">Garantía de calidad verificada</p>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="py-16 bg-gray-900 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <div class="mb-6 flex justify-center">
+        <span class="text-6xl text-blue-400">✉️</span>
+      </div>
+      <h2 class="text-4xl font-bold mb-4">Suscríbete a nuestro newsletter</h2>
+      <p class="text-gray-300 text-lg mb-8">
+        Recibe ofertas exclusivas y novedades directamente en tu correo
+      </p>
+
+      <form class="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+        <input
+          type="email"
+          placeholder="tu@email.com"
+          class="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500"
+        >
+        <button
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg font-bold transition transform hover:scale-105"
+        >
+          Suscribirse
+        </button>
+      </form>
     </div>
-    <div class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all hover:scale-105">
-      <div class="text-4xl mb-3">🔄</div>
-      <h4 class="font-semibold text-gray-900 text-lg">Cambios Fáciles</h4>
-      <p class="text-sm text-gray-700 mt-2">30 días para cambiar o devolver</p>
-    </div>
-  </div>
+  </section>
 </div>

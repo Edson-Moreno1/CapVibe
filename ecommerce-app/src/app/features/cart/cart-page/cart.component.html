@@ -1,82 +1,175 @@
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Tu Carrito</h1>
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+      Carrito de compras
+    </h1>
 
-  @if (cartItems.length > 0) {
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <div class="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-              <tr>
-                <th scope="col" class="py-3 px-6">Producto</th>
-                <th scope="col" class="py-3 px-6">Precio</th>
-                <th scope="col" class="py-3 px-6">Cantidad</th>
-                <th scope="col" class="py-3 px-6">Subtotal</th>
-                <th scope="col" class="py-3 px-6"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of cartItems; track item.product._id) {
-                <tr class="bg-white border-b hover:bg-gray-50">
-                  <td class="py-4 px-6 font-medium text-gray-900">
-                    <div class="flex items-center">
-                      <img [src]="item.product.images[0]" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded-md mr-4">
-                      <span>{{ item.product.name }}</span>
-                    </div>
-                  </td>
-                  <td class="py-4 px-6">{{ item.product.price | currency }}</td>
-                  <td class="py-4 px-6">
-                    <div class="flex items-center">
-                      <button (click)="adjustQuantity(item, -1)" class="px-2 py-1 border border-gray-300 rounded-l-md hover:bg-gray-100">-</button>
-                      <input type="number" [value]="item.quantity" (change)="updateQuantity(item.product._id, $event)" min="1" class="w-12 text-center border-t border-b border-gray-300">
-                      <button (click)="adjustQuantity(item, 1)" class="px-2 py-1 border border-gray-300 rounded-r-md hover:bg-gray-100">+</button>
-                    </div>
-                  </td>
-                  <td class="py-4 px-6 font-semibold">{{ item.product.price * item.quantity | currency }}</td>
-                  <td class="py-4 px-6">
-                    <button (click)="removeItem(item.product._id)" class="text-red-500 hover:text-red-700 font-medium">Eliminar</button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+    @if (isLoading) {
+      <app-loader></app-loader>
+    }
+
+    @if (errorMessage && !isLoading) {
+      <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+        <p class="text-red-700 font-medium">{{ errorMessage }}</p>
       </div>
+    }
 
-      <div class="lg:col-span-1">
-        <div class="bg-white p-6 rounded-lg shadow-md h-fit">
-          <h2 class="text-xl font-bold mb-4">Resumen</h2>
-          <div class="space-y-2">
+    @if (!isLoading && !items.length && !errorMessage) {
+      <div class="bg-white rounded-2xl shadow-sm p-8 text-center">
+        <p class="text-lg text-gray-700 mb-4">
+          Tu carrito está vacío.
+        </p>
+        <button
+          type="button"
+          (click)="goToProducts()"
+          class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+        >
+          Ver productos
+        </button>
+      </div>
+    }
+
+    @if (!isLoading && items.length) {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Lista de productos -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm divide-y divide-gray-100">
+          @for (item of items; track item.product?._id) {
+            <div class="flex flex-col sm:flex-row gap-4 p-4 sm:p-5" data-cy="cart-item">
+              <!-- Imagen -->
+              <div class="w-full sm:w-32 flex-shrink-0">
+                <a [routerLink]="['/products', item.product?._id]">
+                  <div class="rounded-xl overflow-hidden bg-gray-100">
+                    <img
+                      [src]="item.product?.images?.[0] || '/assets/img1.png'"
+                      [alt]="item.product?.name"
+                      appImgFallback
+                      class="w-full h-28 sm:h-24 object-cover"
+                    >
+                  </div>
+                </a>
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <a [routerLink]="['/products', item.product?._id]">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 hover:text-blue-600">
+                      {{ item.product?.name }}
+                    </h2>
+                  </a>
+                  <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                    {{ item.product?.description }}
+                  </p>
+
+                  <div class="mt-2 text-sm text-gray-500 flex flex-wrap gap-2">
+                    @if (item.product?.size) {
+                      <span class="px-2 py-1 rounded-md bg-gray-100">
+                        Talla: {{ item.product.size }}
+                      </span>
+                    }
+                    @if (item.product?.color) {
+                      <span class="px-2 py-1 rounded-md bg-gray-100">
+                        Color: {{ item.product.color }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <div class="mt-3 flex items-center justify-between">
+                  <!-- Controles cantidad -->
+                  <div class="inline-flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      (click)="decrease(item)"
+                      class="px-3 py-1 text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                      [disabled]="item.quantity <= 1"
+                    >
+                      −
+                    </button>
+                    <span class="px-4 py-1 text-gray-900 font-medium min-w-[3rem] text-center">
+                      {{ item.quantity }}
+                    </span>
+                    <button
+                      type="button"
+                      (click)="increase(item)"
+                      class="px-3 py-1 text-gray-700 hover:bg-gray-100"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <!-- Precio por línea -->
+                  <div class="text-right">
+                    <p class="text-sm text-gray-500">
+                      ${{ item.product?.price | number:'1.2-2' }} c/u
+                    </p>
+                    <p class="text-lg font-semibold text-gray-900">
+                      ${{ (item.product?.price || 0) * item.quantity | number:'1.2-2' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acción eliminar -->
+              <div class="flex justify-end sm:justify-center sm:items-start">
+                <button
+                  type="button"
+                  (click)="remove(item)"
+                  class="text-sm text-red-600 hover:text-red-700 hover:underline"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Resumen -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 h-max">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            Resumen de compra
+          </h2>
+
+          <div class="space-y-2 text-sm">
             <div class="flex justify-between">
-              <span>Subtotal</span>
-              <span class="font-medium">{{ totalPrice | currency }}</span>
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-medium text-gray-900">
+                ${{ total | number:'1.2-2' }}
+              </span>
             </div>
             <div class="flex justify-between">
-              <span>Envío</span>
-              <span class="font-medium">Gratis</span>
+              <span class="text-gray-600">Envío</span>
+              <span class="text-gray-600">Se calcula al finalizar</span>
             </div>
           </div>
-          <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between font-bold text-lg">
-            <span>Total</span>
-            <span>{{ totalPrice | currency }}</span>
+
+          <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
+            <span class="text-base font-semibold text-gray-900">
+              Total
+            </span>
+            <span class="text-2xl font-bold text-gray-900" data-cy="cart-total">
+              ${{ total | number:'1.2-2' }}
+            </span>
           </div>
-          <a routerLink="/checkout" class="block text-center w-full mt-6 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-            Proceder al Pago
-          </a>
-          <a routerLink="/products" class="block text-center w-full mt-3 text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
-  o Seguir Comprando
-</a>
+
+          <button
+            type="button"
+            (click)="goToCheckout()"
+            [disabled]="!items.length"
+            class="w-full mt-6 inline-flex justify-center items-center px-4 py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Finalizar compra
+          </button>
+
+          <button
+            type="button"
+            (click)="goToProducts()"
+            class="w-full mt-3 inline-flex justify-center items-center px-4 py-3 rounded-lg font-semibold border border-gray-300 text-gray-800 hover:bg-gray-50 transition-colors"
+          >
+            Seguir comprando
+          </button>
         </div>
       </div>
-    </div>
-  } @else {
-    <div class="text-center py-16 bg-white rounded-lg shadow-md">
-      <h3 class="text-2xl font-semibold mb-2">Tu carrito está vacío</h3>
-      <p class="text-gray-500 mb-6">Parece que aún no has añadido productos a tu carrito.</p>
-      <a routerLink="/products" class="bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-        Ver Productos
-      </a>
-    </div>
-  }
+    }
+  </div>
 </div>

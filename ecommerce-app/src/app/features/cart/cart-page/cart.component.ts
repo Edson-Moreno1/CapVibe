@@ -1,65 +1,80 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../../services/cart.service';
-import { RouterModule } from '@angular/router';
-import { CartItem } from '../../../Models/cart';
-import { Subscription } from 'rxjs';
+import { RouterModule, Router } from '@angular/router';
+import { CartService } from '../../../core/services/cart.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LoaderComponent, ImgFallbackDirective],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
-export class CartComponent implements OnInit, OnDestroy {
-  cartItems: CartItem[] = [];
-  totalPrice: number = 0;
-  private cartSubscription!: Subscription;
+export class CartComponent implements OnInit {
+  private cartService = inject(CartService);
+  private router = inject(Router);
 
-  constructor(private cartService: CartService) {}
+  items: any[] = [];
+  isLoading = false;
+  errorMessage = '';
 
   ngOnInit(): void {
-    // Nos suscribimos al observable 'cart$' del servicio.
-    this.cartSubscription = this.cartService.cart$.subscribe(items => {
-      this.cartItems = items;
-      this.totalPrice = this.cartService.getTotal(); // El total se recalcula con cada cambio.
+    this.loadCart();
+  }
+
+  loadCart(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.cartService.getCart().subscribe({
+      next: (response) => {
+        const items = response.items || response || [];
+        this.items = items;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando carrito:', err);
+        this.errorMessage = 'Error al cargar el carrito. Intenta más tarde.';
+        this.isLoading = false;
+      }
     });
   }
 
-  // El método para el input numérico, convierte el valor a número
-  updateQuantity(productId: string, event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const quantity = parseInt(inputElement.value, 10);
-    
-    // Validamos que la cantidad sea un número válido y mayor a 0
-    if (!isNaN(quantity) && quantity > 0) {
-      this.cartService.updateQuantity(productId, quantity);
-    } else {
-      // Si no es válido, restauramos la cantidad anterior del ítem
-      const item = this.cartItems.find(i => i.product._id === productId);
-      if (item) {
-        inputElement.value = item.quantity.toString();
-      }
-    }
-  }
-  
-  // Método para los botones + y -
-  adjustQuantity(item: CartItem, amount: number): void {
-    const newQuantity = item.quantity + amount;
-    if (newQuantity > 0) {
-      this.cartService.updateQuantity(item.product._id, newQuantity);
-    }
+  get total(): number {
+    return this.items.reduce((sum, item) => {
+      return sum + (item.product?.price || 0) * item.quantity;
+    }, 0);
   }
 
-  removeItem(productId: string): void {
+  increase(item: any): void {
+    const productId = item.product?._id;
+    if (!productId) return;
+    this.cartService.updateQuantity(productId, item.quantity + 1);
+    item.quantity += 1;
+  }
+
+  decrease(item: any): void {
+    const productId = item.product?._id;
+    if (!productId || item.quantity <= 1) return;
+    this.cartService.updateQuantity(productId, item.quantity - 1);
+    item.quantity -= 1;
+  }
+
+  remove(item: any): void {
+    const productId = item.product?._id;
+    if (!productId) return;
     this.cartService.removeFromCart(productId);
+    this.items = this.items.filter(i => i.product?._id !== productId);
   }
 
-  // Buena práctica: nos desuscribimos al destruir el componente.
-  ngOnDestroy(): void {
-    if (this.cartSubscription) {
-      this.cartSubscription.unsubscribe();
-    }
+  goToCheckout(): void {
+    if (!this.items.length) return;
+    this.router.navigate(['/checkout']);
+  }
+
+  goToProducts(): void {
+    this.router.navigate(['/products']);
   }
 }

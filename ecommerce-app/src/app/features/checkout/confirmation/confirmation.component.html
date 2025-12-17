@@ -1,82 +1,140 @@
-<!-- confirmation.component.html -->
-<div class="container mt-4">
-    @if (order) {
-      <div class="card shadow-sm">
-        <div class="card-body text-center py-5">
-          <div class="confirmation-icon mb-4">
-            <i class="bi bi-check-circle-fill"></i>
-          </div>
-          
-          <h2 class="mb-3">¡Gracias por tu compra!</h2>
-          <p class="lead mb-4">Tu pedido ha sido recibido y está siendo procesado.</p>
-          
-          <div class="alert alert-info mb-4">
-            <strong>Número de pedido:</strong> {{ order.orderNumber }}
-            <br>
-            <strong>Fecha:</strong> {{ formatDate(order.date) }}
-          </div>
-          
-          <div class="row mt-5">
-            <div class="col-md-6 mb-4">
-              <div class="card h-100">
-                <div class="card-header bg-light">
-                  Información de envío
-                </div>
-                <div class="card-body">
-                  <p><strong>Nombre:</strong> {{ order.shippingInfo.nombre }}</p>
-                  <p><strong>Correo:</strong> {{ order.shippingInfo.correo }}</p>
-                  <p><strong>Dirección:</strong> {{ order.shippingInfo.direccion }}</p>
-                  <p><strong>Ciudad:</strong> {{ order.shippingInfo.ciudad }}</p>
-                  <p><strong>Estado:</strong> {{ order.shippingInfo.estado }}</p>
-                  <p><strong>Código postal:</strong> {{ order.shippingInfo.codigopostal }}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="col-md-6 mb-4">
-              <div class="card h-100">
-                <div class="card-header bg-light">
-                  Resumen del pedido
-                </div>
-                <div class="card-body">
-                  @for (item of order.items; track item.product._id) {
-                    <div class="d-flex justify-content-between mb-2">
-                      <div>
-                        <span>{{ item.product.name }}</span>
-                        <small class="text-muted d-block">Cantidad: {{ item.quantity }}</small>
-                      </div>
-                      <span>${{ item.product.price * item.quantity }}</span>
-                    </div>
-                  }
-                  
-                  <hr>
-                  
-                  <div class="d-flex justify-content-between">
-                    <strong>Total:</strong>
-                    <strong class="text-primary">${{ order.total }}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <a routerLink="/products" class="btn btn-primary">
-              <i class="bi bi-bag"></i> Volver a la tienda
-            </a>
-          </div>
-        </div>
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-12 max-w-3xl">
+    @if (!order) {
+      <!-- Caso sin datos (refresco o acceso directo) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+          Pedido procesado
+        </h1>
+        <p class="text-gray-600 mb-6">
+          No encontramos los detalles del pedido en esta sesión, pero tu compra fue registrada.
+        </p>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+          (click)="goToHome()"
+        >
+          Volver al inicio
+        </button>
       </div>
     } @else {
-      <div class="text-center py-5">
-        <div class="alert alert-warning">
-          <i class="bi bi-exclamation-triangle me-2"></i>
-          No hay información de pedido disponible.
+      <!-- Caso normal con datos de la orden -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <!-- Encabezado -->
+        <div class="text-center mb-8">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+            <span class="text-3xl text-green-600">✓</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+            Gracias por tu compra
+          </h1>
+          <p class="mt-2 text-gray-600 text-sm md:text-base">
+            Tu pedido se ha procesado correctamente. Te enviaremos un correo con los detalles.
+          </p>
+
+          @if (order._id) {
+            <p class="mt-3 text-sm text-gray-500">
+              Número de pedido:
+              <span class="font-mono font-semibold text-gray-800">
+                {{ order._id }}
+              </span>
+            </p>
+          }
         </div>
-        <p class="mt-3">Parece que no has realizado ningún pedido o la información del pedido no está disponible.</p>
-        <a routerLink="/products" class="btn btn-primary mt-3">
-          <i class="bi bi-arrow-left me-2"></i>Volver a la tienda
-        </a>
+
+        <!-- Resumen principal -->
+        <div class="space-y-6">
+          <!-- Detalles de envío y pago -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-xl bg-gray-50 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-2">
+                Dirección de envío
+              </h2>
+              <p class="text-sm text-gray-700">
+                {{ order.shippingAddress?.address }}
+              </p>
+              <p class="text-sm text-gray-700">
+                {{ order.shippingAddress?.city }}, {{ order.shippingAddress?.state }}
+              </p>
+              <p class="text-sm text-gray-700">
+                CP {{ order.shippingAddress?.postalCode }}, {{ order.shippingAddress?.country || 'Mexico' }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-gray-50 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-2">
+                Pago
+              </h2>
+              <p class="text-sm text-gray-700">
+                Método: {{ order.paymentMethod || 'Tarjeta' }}
+              </p>
+              @if (order.createdAt) {
+                <p class="text-sm text-gray-700 mt-1">
+                  Fecha: {{ order.createdAt | date:'dd/MM/yyyy, HH:mm' }}
+                </p>
+              }
+              <p class="text-sm text-gray-500 mt-2">
+                El cargo puede tardar unos minutos en verse reflejado.
+              </p>
+            </div>
+          </div>
+
+          <!-- Lista de productos -->
+          <div class="rounded-xl border border-gray-100">
+            <div class="border-b border-gray-100 px-4 py-3">
+              <h2 class="text-sm font-semibold text-gray-800">
+                Productos
+              </h2>
+            </div>
+            <div class="max-h-60 overflow-y-auto divide-y divide-gray-100">
+              @for (item of order.items; track item.product?._id || item.productId) {
+                <div class="flex items-center justify-between px-4 py-3">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ item.product?.name || item.name || 'Producto' }}
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Cantidad: {{ item.quantity }}
+                    </p>
+                  </div>
+                  <div class="ml-4 text-sm font-semibold text-gray-900">
+                    ${{ (item.price || item.product?.price || 0) * item.quantity | number:'1.2-2' }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+            <span class="text-base font-semibold text-gray-900">
+              Total pagado
+            </span>
+            <span class="text-2xl font-bold text-gray-900">
+              ${{ order.total | number:'1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-center">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors w-full sm:w-auto"
+            (click)="goToHome()"
+          >
+            Volver al inicio
+          </button>
+
+          <button
+            type="button"
+            class="inline-flex items-center justify-center px-5 py-3 rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-50 font-semibold transition-colors w-full sm:w-auto"
+            (click)="goToOrders()"
+          >
+            Ver mis pedidos
+          </button>
+        </div>
       </div>
     }
   </div>
+</div>

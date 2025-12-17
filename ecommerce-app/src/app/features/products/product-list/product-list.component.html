@@ -1,86 +1,346 @@
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h2 class="mb-8 text-3xl font-bold text-center text-gray-800">Nuestras Gorras</h2>
-
-@if (successMessage) {
-  <div class="fixed top-5 right-5 z-50 max-w-sm bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg flex items-center justify-between" role="alert">
-    
-    <div>
-      <strong class="font-bold">¡Éxito!</strong>
-      <span class="ml-2">{{ successMessage }}</span>
-    </div>
-
-    <span class="ml-4 p-1 rounded-full hover:bg-green-200" (click)="successMessage = null">
-      <svg class="fill-current h-5 w-5 text-green-600" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-    </span>
-
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <!-- Header del Catálogo -->
+  <div class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Nuestro Catálogo</h1>
+    <p class="text-gray-600">Descubre nuestra colección de productos exclusivos</p>
   </div>
-}
-  @defer {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      @for (product of products; track product._id) {
-        <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 group">
-          
-          <div class="relative">
-            <img [src]="product.images[0]" class="w-full h-72 object-cover" alt="Imagen de {{ product.name }}">
-            <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
+  <!-- Loader -->
+  @if (isLoading) {
+    <app-loader></app-loader>
+  }
 
-          <div class="p-5 flex flex-col flex-grow">
-            <h5 class="text-xl font-bold text-gray-900 truncate">{{ product.name }}</h5>
-            <p class="mt-2 text-lg text-indigo-600 font-semibold">{{ product.price | currency }}</p>
-            <p class="mt-2 text-sm text-gray-600 flex-grow">{{ product.description | slice:0:100 }}...</p>
-            
-            <div class="mt-4 pt-4 border-t border-gray-200 flex items-center space-x-2">
-              <button class="flex-1 text-center py-2 px-4 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 font-semibold transition-colors" [routerLink]="['/products', product._id]">
-                Ver más
-              </button>
-              <button class="flex-1 text-center py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-semibold transition-colors" (click)="addToCart(product)">
-                Añadir
-              </button>
-            </div>
-          </div>
-        </div>
-      } @empty {
-        <div class="col-span-full text-center py-16">
-          <p class="text-gray-500">No hay productos disponibles en este momento.</p>
-        </div>
-      }
-      </div> } @placeholder {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="w-full h-72 bg-gray-200 animate-pulse"></div>
-          <div class="p-5">
-            <div class="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-2"></div>
-            <div class="h-5 w-1/4 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div class="h-4 w-full bg-gray-200 rounded animate-pulse mb-1"></div>
-            <div class="h-4 w-full bg-gray-200 rounded animate-pulse mb-1"></div>
-            <div class="h-4 w-1/2 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        </div>
-      }
+  <!-- Mensaje de Error -->
+  @if (errorMessage && !isLoading) {
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
+      <div class="flex">
+        <svg class="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <p class="text-red-700 font-medium">{{ errorMessage }}</p>
+      </div>
     </div>
   }
 
-  <div class="w-full flex justify-end items-center space-x-4 mt-12">
-      @if (totalPages > 0) {
-        <button (click)="previousPage()" 
-                [disabled]="currentPage === 1"
-                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 font-semibold transition-colors">
-          Anterior
-        </button>
+  <!-- Layout con sidebar de filtros + productos -->
+  <div class="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-8">
+    <!-- Sidebar de filtros -->
+    <aside class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 lg:p-6 h-max">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        Filtros
+      </h2>
 
-        <span class="text-lg font-semibold text-gray-700">
-          Página {{ currentPage }} de {{ totalPages }}
-        </span>
+      <!-- Filtro por categoría (ejemplo básico) -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">
+          Categoría
+        </h3>
+        <div class="space-y-2">
+          <button
+            type="button"
+            class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+            [class.bg-blue-50]="!currentCategory"
+            [class.text-blue-700]="!currentCategory"
+            (click)="applyCategoryFilter(null)"
+          >
+            Todas
+          </button>
 
-        <button (click)="nextPage()"
-                [disabled]="currentPage === totalPages"
-                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 font-semibold transition-colors">
-          Siguiente
-        </button>
+          <!-- Ajusta estos nombres a tus categorías reales -->
+          <button
+            type="button"
+            class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+            [class.bg-blue-50]="currentCategory === 'MLB'"
+            [class.text-blue-700]="currentCategory === 'MLB'"
+            (click)="applyCategoryFilter('MLB')"
+          >
+            MLB
+          </button>
+
+          <button
+            type="button"
+            class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+            [class.bg-blue-50]="currentCategory === 'NBA'"
+            [class.text-blue-700]="currentCategory === 'NBA'"
+            (click)="applyCategoryFilter('NBA')"
+          >
+            NBA
+          </button>
+
+          <button
+            type="button"
+            class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+            [class.bg-blue-50]="currentCategory === 'F1'"
+            [class.text-blue-700]="currentCategory === 'F1'"
+            (click)="applyCategoryFilter('F1')"
+          >
+            F1
+          </button>
+
+          <button
+            type="button"
+            class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-100"
+            [class.bg-blue-50]="currentCategory === 'Liga MX'"
+            [class.text-blue-700]="currentCategory === 'Liga MX'"
+            (click)="applyCategoryFilter('Liga MX')"
+          >
+            Liga MX
+          </button>
+        </div>
+      </div>
+
+      <!-- Aquí puedes añadir más filtros (precio, talla, color) más adelante -->
+    </aside>
+
+    <!-- Columna derecha: productos, mensajes y paginación -->
+    <section>
+      <!-- Grid de Productos -->
+      @if (!isLoading && filteredProducts.length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          @for (product of filteredProducts; track product._id) {
+            <div
+              class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+            >
+              <!-- Imagen del Producto -->
+              <div
+                class="relative cursor-pointer group overflow-hidden"
+                [routerLink]="['/products', product._id]"
+              >
+                <img
+                  [src]="product.images?.[0] || '/assets/img1.png'"
+                  [alt]="product.name"
+                  appImgFallback
+                  class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                >
+
+                <!-- Overlay en Hover -->
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"
+                >
+                  <span
+                    class="text-white text-sm font-semibold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30"
+                  >
+                    Ver detalles
+                  </span>
+                </div>
+
+                <!-- Badge de Stock -->
+                <div class="absolute top-3 left-3">
+                  @if ((product.stock ?? 0) > 0 && (product.stock ?? 0) <= 5) {
+                    <span
+                      class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                    >
+                      ¡Solo {{ product.stock }}!
+                    </span>
+                  } @else if ((product.stock ?? 0) > 5) {
+                    <span
+                      class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                    >
+                      Disponible
+                    </span>
+                  } @else {
+                    <span
+                      class="bg-gray-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                    >
+                      Agotado
+                    </span>
+                  }
+                </div>
+
+                <!-- Badge de Marca -->
+                @if (product.brand) {
+                  <div
+                    class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-lg"
+                  >
+                    {{ product.brand }}
+                  </div>
+                }
+              </div>
+
+              <!-- Información del Producto -->
+              <div class="p-5">
+                <!-- Categoría -->
+                <p
+                  class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-2"
+                >
+                  @if (isCategoryObject(product.category)) {
+                    {{ product.category.name || 'General' }}
+                  } @else {
+                    {{ product.category || 'General' }}
+                  }
+                </p>
+
+                <!-- Nombre -->
+                <h3
+                  class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer min-h-[3.5rem]"
+                  [routerLink]="['/products', product._id]"
+                >
+                  {{ product.name }}
+                </h3>
+
+                <!-- Descripción -->
+                <p class="text-sm text-gray-600 mb-3 line-clamp-2 min-h-[2.5rem]">
+                  {{ product.description || 'Sin descripción disponible' }}
+                </p>
+
+                <!-- Detalles adicionales -->
+                <div class="flex gap-2 mb-4 flex-wrap">
+                  @if (product.size) {
+                    <span
+                      class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
+                    >
+                      📏 {{ product.size }}
+                    </span>
+                  }
+                  @if (product.color) {
+                    <span
+                      class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
+                    >
+                      🎨 {{ product.color }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Precio -->
+                <div class="mb-4">
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-gray-900">
+                      ${{ product.price | number: '1.2-2' }}
+                    </span>
+                    <span class="text-sm text-gray-500">MXN</span>
+                  </div>
+                </div>
+
+                <!-- Botón de Comprar -->
+                <button
+                  type="button"
+                  data-cy="add-to-cart"
+                  (click)="addToCart(product)"
+                  [disabled]="(product.stock ?? 0) === 0"
+                  [ngClass]="{
+                    'bg-gray-300 text-gray-500 cursor-not-allowed': (product.stock ?? 0) === 0,
+                    'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0': (product.stock ?? 0) > 0
+                  }"
+                  class="w-full py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  <span>
+                    {{ (product.stock ?? 0) === 0 ? 'Agotado' : 'Agregar al carrito' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
       }
-  </div>
 
+      <!-- Sin productos filtrados -->
+      @if (!isLoading && filteredProducts.length === 0 && !errorMessage) {
+        <div class="text-center py-20">
+          <div class="max-w-md mx-auto">
+            <svg
+              class="mx-auto h-24 w-24 text-gray-400 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">
+              No hay productos para este filtro
+            </h3>
+            <p class="text-gray-600">
+              Prueba con otra categoría o limpia los filtros.
+            </p>
+          </div>
+        </div>
+      }
+
+      <!-- Paginación -->
+      @if (!isLoading && filteredProducts.length > 0 && totalPages > 1) {
+        <nav class="flex items-center justify-center gap-2 mt-10" aria-label="Paginación">
+          <!-- Botón Anterior -->
+          <button
+            (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1"
+            [ngClass]="{
+              'opacity-50 cursor-not-allowed': currentPage === 1,
+              'hover:bg-gray-100': currentPage !== 1
+            }"
+            class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium transition-colors flex items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Anterior
+          </button>
+
+          <!-- Números de Página -->
+          <div class="hidden sm:flex gap-2">
+            @for (page of getPageNumbers(); track page) {
+              <button
+                (click)="changePage(page)"
+                [ngClass]="{
+                  'bg-blue-600 text-white': page === currentPage,
+                  'text-gray-700 hover:bg-gray-100': page !== currentPage
+                }"
+                class="w-10 h-10 rounded-lg border border-gray-300 font-semibold transition-colors"
+              >
+                {{ page }}
+              </button>
+            }
+          </div>
+
+          <!-- Indicador Mobile -->
+          <div class="sm:hidden px-4 py-2 bg-gray-100 rounded-lg">
+            <span class="text-sm font-medium text-gray-700">
+              Página {{ currentPage }} de {{ totalPages }}
+            </span>
+          </div>
+
+          <!-- Botón Siguiente -->
+          <button
+            (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+            [ngClass]="{
+              'opacity-50 cursor-not-allowed': currentPage === totalPages,
+              'hover:bg-gray-100': currentPage !== totalPages
+            }"
+            class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium transition-colors flex items-center gap-2"
+          >
+            Siguiente
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </nav>
+      }
+    </section>
+  </div>
 </div>

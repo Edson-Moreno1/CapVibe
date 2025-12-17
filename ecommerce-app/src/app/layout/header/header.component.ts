@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../../services/cart.service';
-import { Subscription } from 'rxjs';
-import { CartItem } from '../../Models/cart';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
+import { LayoutService } from '../../core/services/layout.service';
+import { User } from '../../core/models/user.interface';
 
 @Component({
   selector: 'app-header',
@@ -13,39 +13,50 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  cartItemCount: number = 0;
-  isLoggedIn: boolean = false;
-  private cartSubscription!: Subscription;
-  private authSubscription!: Subscription;
+export class HeaderComponent implements OnInit {
+  private authService = inject(AuthService);
+  private cartService = inject(CartService);
+  private layoutService = inject(LayoutService);
 
-  constructor(
-    private cartService: CartService,
-    private authService: AuthService
-  ) {}
+  currentUser: User | null = null;
+  isLoggedIn = false;
+  cartItemCount = 0;
+  dropdownOpen = false;
 
   ngOnInit(): void {
-    // Nos suscribimos al observable del carrito
-    this.cartSubscription = this.cartService.cart$.subscribe((items: CartItem[]) => {
-      // Sumamos la 'quantity' de cada item para obtener el total de productos
-      this.cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isLoggedIn = !!user;
     });
-    this.authSubscription = this.authService.isLoggedIn$.subscribe(status =>{
-      this.isLoggedIn = status;
+
+    this.cartService.cart$.subscribe(cart => {
+      this.cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
     });
   }
 
-  ngOnDestroy(): void {
-    // Limpiamos la suscripción al destruir el componente
-    if (this.cartSubscription) {
-      this.cartSubscription.unsubscribe();
-    }
-    if(this.authSubscription){
-      this.authSubscription.unsubscribe();
+  toggleSidebar() {
+    this.layoutService.toggleSidebar();
   }
-}
 
-  logout():void{
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  closeDropdown() {
+    this.dropdownOpen = false;
+  }
+
+  logout() {
     this.authService.logout();
+    this.closeDropdown();
+  }
+
+  // Cerrar dropdown al hacer click fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative') && this.dropdownOpen) {
+      this.closeDropdown();
+    }
   }
 }

@@ -13,7 +13,7 @@ export const register = async (req, res)=> {
       logger.warn(`Intento de registro fallido:${error.message}`);
       return res.status(error.statusCode || 400).json({message:error.message});
     }
-    logeer.error(`Error en el registro de usuario: ${error.message}`);
+    logger.error(`Error en el registro de usuario: ${error.message}`);
     res.status(500).json({ message:'Error interno del servidor',error:error.message});
   }
 };
